@@ -1,0 +1,91 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Quicksort
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var array = new int[] { 5, 4, 2, 6, 8, 7, 1, 4, 58, 0 };
+            SortIteration(array);
+       //     SortRecursive(array, 0, array.Length-1);
+        }
+
+
+        private static void SortIteration(int[] array)
+        {
+            var stack = new Stack<Iteration>();
+            int i = 0;
+            int j = array.Length - 1;
+
+            stack.Push(new Iteration { lo = i, hi = j });
+
+            while (stack.Any())
+            {
+                var iteration = stack.Pop();
+                
+                if (iteration.lo < iteration.hi)
+                {
+                    var p = Partition(array, iteration.lo, iteration.hi);
+                    stack.Push(new Iteration { lo = iteration.lo, hi = p-1 });
+                    stack.Push(new Iteration { lo = p+1, hi = iteration.hi });
+                }
+            }
+        }
+
+        private static void SortRecursive(int[] array, int lo, int hi)
+        {
+            if (lo < hi)
+            {
+                var p = Partition(array, lo, hi);
+                SortRecursive(array, lo, p-1);
+                SortRecursive(array, p+1, hi);
+            }
+        }
+
+        private static int Partition(int[] array, int lo, int hi)
+        {
+            int reference = array[lo];
+
+            int i = lo;
+            int j = hi;
+            while (i < j)
+            {
+                while (i <= hi && array[i] <= reference) 
+                {
+                    i++;
+                }
+                while (array[j] > reference)
+                {
+                    j--;
+                } 
+                if (i < j)
+                {
+                    Swap(array, i, j);
+                }
+            }
+
+            if (lo != j)
+            {
+                Swap(array, lo, j);
+            }
+            return j;
+        }
+
+        private static void Swap(int[] array, int i, int j)
+        {
+            var temp = array[j];
+            array[j] = array[i];
+            array[i] = temp;
+        }
+    }
+    public class Iteration
+    {
+        public int lo { get; set; }
+        public int hi { get; set; }
+    }
+}
