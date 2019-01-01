@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Quicksort
@@ -10,9 +11,22 @@ namespace Quicksort
     {
         static void Main(string[] args)
         {
-            var array = new int[] { 5, 4, 2, 6, 8, 7, 1, 4, 58, 0 };
-            SortIteration(array);
+            var thread = new Thread(new ThreadStart(DoWork), 20000000);
+            thread.Start();
        //     SortRecursive(array, 0, array.Length-1);
+        }
+
+        private static void DoWork()
+        {
+            var array = Enumerable.Range(0, 100000).Reverse().ToArray();
+            var s = new System.Diagnostics.Stopwatch();
+            s.Start();
+            SortIteration(array);
+            //SortRecursive(array, 0, array.Length - 1);
+            s.Stop();
+            var ms = s.ElapsedMilliseconds;
+            Console.WriteLine(ms);
+            Console.ReadLine();
         }
 
 
@@ -27,7 +41,7 @@ namespace Quicksort
             while (stack.Any())
             {
                 var iteration = stack.Pop();
-                
+                         
                 if (iteration.lo < iteration.hi)
                 {
                     var p = Partition(array, iteration.lo, iteration.hi);
@@ -49,7 +63,7 @@ namespace Quicksort
 
         private static int Partition(int[] array, int lo, int hi)
         {
-            int reference = array[lo];
+            int reference = array[lo+(hi-lo)/2];
 
             int i = lo;
             int j = hi;
@@ -83,7 +97,7 @@ namespace Quicksort
             array[i] = temp;
         }
     }
-    public class Iteration
+    public struct Iteration
     {
         public int lo { get; set; }
         public int hi { get; set; }
