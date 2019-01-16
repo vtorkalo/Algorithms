@@ -27,6 +27,7 @@ namespace Quicksort
             var ms = s.ElapsedMilliseconds;
             Console.WriteLine(ms);
             Console.ReadLine();
+            Console.ReadLine();
         }
 
 
