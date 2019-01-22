@@ -243,6 +243,7 @@ namespace WaveSearch
                     if (data[row, col].HasValue)
                     {
                         var value = data[row, col].Value;
+                        Console.ForegroundColor = value == -1 ? ConsoleColor.Red : ConsoleColor.White;
                         Console.Write(value == -1 ? "X  " : string.Format("{0, -3}", value) );
                     }
                     else
