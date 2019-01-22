@@ -40,7 +40,7 @@ namespace WaveSearch
                 }
                 PrintData(data);
                 Console.WriteLine("Path " + index.ToString());
-                Thread.Sleep(1000);
+                Thread.Sleep(10000);
                 index++;
             }
 
@@ -50,11 +50,9 @@ namespace WaveSearch
 
         private static double GetPathLength(List<Cell> path)
         {
-            double sqlrt2 = Math.Sqrt(2);
+            double sqrt2 = Math.Sqrt(2);
             double length = 0;
-            // 0 0 0
-            // 0 0 0 
-            // 0 0 0 
+          
             for (int i=0; i< path.Count-1; i++)
             {
                 var currentCell = path[i];
@@ -66,7 +64,7 @@ namespace WaveSearch
                     || nextCell.row == currentCell.row + 1 && nextCell.col == currentCell.col - 1
                     )
                 {
-                    length += sqlrt2;
+                    length += sqrt2;
                 }
                 else
                 {
@@ -80,7 +78,7 @@ namespace WaveSearch
 
         private static void RestorePath(int?[,] data, Cell endCell, List<List<Cell>> paths, List<Cell> currentPath, Cell currentCell)
         {
-            if (paths.Count >= 1000)
+            if (paths.Count >= 100)
             {
                 return;
             }
@@ -107,11 +105,6 @@ namespace WaveSearch
                     {
                         RestorePath(data, endCell, paths, newPath, neighbor);
                     }
-                    else
-                    {
-                        break;
-                    }
-
                 }
             }
 
@@ -163,7 +156,7 @@ namespace WaveSearch
                         SetValue(data, neighbor, currentCellValue + 1);
                         PrintData(data);
                         Console.WriteLine("Preparing cell values");
-                        Thread.Sleep(100);
+                        Thread.Sleep(50);
                         queue.Enqueue(neighbor);
                     }
                 }
@@ -186,14 +179,15 @@ namespace WaveSearch
             int col = cell.col;
             var result = new List<Cell>
             {
-                new Cell{row = row-1, col = col-1},
                 new Cell{row = row-1, col = col},
-                new Cell{row = row-1, col = col+1},
                 new Cell{row = row, col = col+1},
-                new Cell{row = row+1, col = col+1},
                 new Cell{row = row+1, col = col},
-                new Cell{row = row+1, col = col-1},
                 new Cell{row = row, col = col-1},
+
+                new Cell{row = row-1, col = col-1},
+                new Cell{row = row-1, col = col+1},
+                new Cell{row = row+1, col = col+1},
+                new Cell{row = row+1, col = col-1},
             };
 
             return result.Where(c => c.row >= 0 && c.col >= 0
@@ -203,6 +197,9 @@ namespace WaveSearch
         private static int?[,] PrepareData()
         {
             var data = new int?[8, 12];
+            data[3, 2] = -1;
+
+
             data[0, 2] = -1;
             data[1, 2] = -1;
 
