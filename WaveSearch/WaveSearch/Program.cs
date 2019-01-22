@@ -45,7 +45,7 @@ namespace WaveSearch
         }
 
 
-        private static void RestorePath(int?[,] data, Cell endCell, List<List<Cell>> paths, List<Cell> currentPath, Cell currentCell)//TODO refactor this s*it
+        private static void RestorePath(int?[,] data, Cell endCell, List<List<Cell>> paths, List<Cell> currentPath, Cell currentCell)
         {
             var endCellValue = GetValue(data, endCell);
             if (!endCellValue.HasValue)
@@ -125,7 +125,7 @@ namespace WaveSearch
                     {
                         SetValue(data, neighbor, currentCellValue + 1);
                         PrintData(data);
-                        Thread.Sleep(200);
+                        Thread.Sleep(100);
                         queue.Enqueue(neighbor);
                     }
                 }
