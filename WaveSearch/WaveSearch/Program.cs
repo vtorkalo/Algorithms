@@ -15,25 +15,12 @@ namespace WaveSearch
         static void Main(string[] args)
         {
             var data = PrepareData();
-
-            PrintData(data);
-            int startRow = 6;
-            int startCol = 3;
-
-            int endRow = 0;
-            int endCol = 3;
-
-            
-            var startCell = new Cell { row = startRow, col = startCol };
-            var endCell = new Cell { row = endRow, col = endCol };
+            var startCell = new Cell { row = 6, col = 3 };
+            var endCell = new Cell { row = 0, col = 3 };
 
             SetValue(data, startCell, 0);
             Fill(data,startCell);
-
-            var path = new List<Cell>();
-            path.Add(startCell);
-            RestorePath(data, path, endCell , startCell);
-            path.Add(endCell);
+            var path = RestorePath(data, endCell);
 
             foreach (var c in path)
             {
@@ -44,21 +31,39 @@ namespace WaveSearch
             Console.ReadLine();
         }
 
-        private static void RestorePath(int?[,] data, List<Cell> path, Cell currentCell, Cell startCell)
+
+        private static List<Cell>  RestorePath(int?[,] data, Cell endCell)
         {
-            var currentCellValue = GetValue(data, currentCell);
-            var neighbors = GetNeighbors(currentCell, data.GetLength(0), data.GetLength(1));
-            foreach (var neighbor in neighbors)
+            List<Cell> path = new List<Cell>();
+            Cell currentCell = endCell;
+            var endCellValue = GetValue(data, endCell);
+            if (!endCellValue.HasValue)
             {
-                var cellValue = GetValue(data, neighbor);
-                if (cellValue == currentCellValue - 1)
-                {
-                    path.Add(neighbor);
-                    RestorePath(data, path, neighbor, startCell);
-                    return;
-                }
+                return null;
             }
+            path.Add(endCell);
+
+            var currentCellValue = GetValue(data, currentCell);
+
+            while (currentCellValue > 0)
+            {
+                var neighbors = GetNeighbors(currentCell, data.GetLength(0), data.GetLength(1));
+                foreach (var neighbor in neighbors)
+                {
+                    var cellValue = GetValue(data, neighbor);
+                    if (cellValue == currentCellValue - 1)
+                    {
+                        path.Add(neighbor);
+                        currentCell = neighbor;
+                        break;
+                    }
+                }
+                currentCellValue = GetValue(data, currentCell);
+            }
+
+            return path;
         }
+
 
         private static void Fill(int?[,] data, Cell startCell)
         {
@@ -71,15 +76,14 @@ namespace WaveSearch
                 var neighbors = GetNeighbors(currentCell, data.GetLength(0), data.GetLength(1));
                 foreach (var neighbor in neighbors)
                 {
-
                     var currentCellValue = GetValue(data, currentCell);
 
                     var cellValue = GetValue(data, neighbor);
                     if (!cellValue.HasValue)
                     {
                         SetValue(data, neighbor, currentCellValue + 1);
-                        PrintData(data);
-                        Thread.Sleep(100);
+                        //PrintData(data);
+                        //Thread.Sleep(200);
                         queue.Enqueue(neighbor);
                     }
                 }
@@ -96,7 +100,7 @@ namespace WaveSearch
             data[cell.row, cell.col] = value;
         }
 
-        private static List<Cell> GetNeighbors(Cell cell, int totalRows, int totalCols)
+        private static IEnumerable<Cell> GetNeighbors(Cell cell, int totalRows, int totalCols)
         {
             int row = cell.row;
             int col = cell.col;
@@ -114,11 +118,8 @@ namespace WaveSearch
                 new Cell{row = row+1, col = col+1},
             };
 
-            result = result.Where(c => c.row >= 0 && c.col >= 0 
-                                 && c.row < totalRows && c.col < totalCols)
-                                 .ToList();
-
-            return result;
+            return result.Where(c => c.row >= 0 && c.col >= 0
+                                  && c.row < totalRows && c.col < totalCols);
         }
 
         private static int?[,] PrepareData()
