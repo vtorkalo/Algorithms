@@ -84,7 +84,7 @@ namespace WaveSearch
             }
         }
 
-        private static bool AlreadyExists(List<List<Cell>> paths, List<Cell> newPath) //TODO refactor this s*it
+        private static bool AlreadyExists(List<List<Cell>> paths, List<Cell> newPath) //TODO refactor this
         {
             bool alreadyExists = false;
             foreach (var p in paths)
@@ -152,13 +152,11 @@ namespace WaveSearch
                 new Cell{row = row-1, col = col-1},
                 new Cell{row = row-1, col = col},
                 new Cell{row = row-1, col = col+1},
-
-                new Cell{row = row, col = col-1},
                 new Cell{row = row, col = col+1},
-
-                new Cell{row = row+1, col = col-1},
-                new Cell{row = row+1, col = col},
                 new Cell{row = row+1, col = col+1},
+                new Cell{row = row+1, col = col},
+                new Cell{row = row+1, col = col-1},
+                new Cell{row = row, col = col-1},
             };
 
             return result.Where(c => c.row >= 0 && c.col >= 0
@@ -176,10 +174,8 @@ namespace WaveSearch
             data[4, 3] = -1;
             data[4, 4] = -1;
 
-
             data[3, 8] = -1;
             data[3, 9] = -1;
-
 
             data[5, 9] = -1;
             data[5, 10] = -1;
