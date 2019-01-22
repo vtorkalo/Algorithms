@@ -36,7 +36,7 @@ namespace WaveSearch
                     cellIndex++;
                 }
                 PrintData(data);
-                Console.ReadLine();
+                Thread.Sleep(1000);
                 index++;
             }
 
@@ -124,8 +124,8 @@ namespace WaveSearch
                     if (!cellValue.HasValue)
                     {
                         SetValue(data, neighbor, currentCellValue + 1);
-                        //PrintData(data);
-                        //Thread.Sleep(200);
+                        PrintData(data);
+                        Thread.Sleep(200);
                         queue.Enqueue(neighbor);
                     }
                 }
