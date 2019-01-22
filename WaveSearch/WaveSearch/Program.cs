@@ -19,51 +19,93 @@ namespace WaveSearch
             var endCell = new Cell { row = 0, col = 3 };
 
             SetValue(data, startCell, 0);
-            Fill(data,startCell);
-            var path = RestorePath(data, endCell);
+            Fill(data, startCell);
 
-            foreach (var c in path)
+            var paths = new List<List<Cell>>();
+            var currentPath = new List<Cell> { endCell };
+            RestorePath(data, endCell, paths, currentPath, endCell);
+
+            int index = 0;
+            foreach (var path in paths)
             {
-                SetValue(data, c, 0);
+                data = PrepareData();
+                int cellIndex = 0;
+                foreach (var c in path)
+                {
+                    SetValue(data, c, cellIndex);
+                    cellIndex++;
+                }
+                PrintData(data);
+                Console.ReadLine();
+                index++;
             }
-            PrintData(data);
+
 
             Console.ReadLine();
         }
 
 
-        private static List<Cell>  RestorePath(int?[,] data, Cell endCell)
+        private static void RestorePath(int?[,] data, Cell endCell, List<List<Cell>> paths, List<Cell> currentPath, Cell currentCell)//TODO refactor this s*it
         {
-            List<Cell> path = new List<Cell>();
-            Cell currentCell = endCell;
             var endCellValue = GetValue(data, endCell);
             if (!endCellValue.HasValue)
             {
-                return null;
+                return;
             }
-            path.Add(endCell);
 
             var currentCellValue = GetValue(data, currentCell);
-
-            while (currentCellValue > 0)
+            var neighbors = GetNeighbors(currentCell, data.GetLength(0), data.GetLength(1));
+            foreach (var neighbor in neighbors)
             {
-                var neighbors = GetNeighbors(currentCell, data.GetLength(0), data.GetLength(1));
-                foreach (var neighbor in neighbors)
+                var cellValue = GetValue(data, neighbor);
+                if (cellValue == currentCellValue - 1)
                 {
-                    var cellValue = GetValue(data, neighbor);
-                    if (cellValue == currentCellValue - 1)
+                    var newPath = new List<Cell>();
+                    newPath.AddRange(currentPath);
+                    newPath.Add(neighbor);
+
+                    var alreadyExists = AlreadyExists(paths, newPath);
+
+                    if (!alreadyExists)
                     {
-                        path.Add(neighbor);
-                        currentCell = neighbor;
+                        RestorePath(data, endCell, paths, newPath, neighbor);
+                    }
+                    else
+                    {
                         break;
                     }
-                }
-                currentCellValue = GetValue(data, currentCell);
-            }
 
-            return path;
+                }
+            }
+            currentCellValue = GetValue(data, currentCell);
+            if (currentCellValue == 0)
+            {
+                paths.Add(currentPath);
+            }
         }
 
+        private static bool AlreadyExists(List<List<Cell>> paths, List<Cell> newPath) //TODO refactor this s*it
+        {
+            bool alreadyExists = false;
+            foreach (var p in paths)
+            {
+                var existingCellPath = p.Take(newPath.Count).ToList();
+                if (existingCellPath.Count() == newPath.Count)
+                {
+                    bool match = true;
+                    for (int i = 0; i < newPath.Count; i++)
+                    {
+                        if (newPath[i].row != existingCellPath[i].row || newPath[i].col != existingCellPath[i].col)
+                        {
+                            match = false;
+                        }
+                    }
+                    alreadyExists = match;
+                }
+            }
+
+            return alreadyExists;
+        }
 
         private static void Fill(int?[,] data, Cell startCell)
         {
