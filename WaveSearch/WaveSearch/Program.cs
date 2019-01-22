@@ -99,12 +99,7 @@ namespace WaveSearch
                     newPath.AddRange(currentPath);
                     newPath.Add(neighbor);
 
-                    var alreadyExists = AlreadyExists(paths, newPath);
-
-                    if (!alreadyExists)
-                    {
-                        RestorePath(data, endCell, paths, newPath, neighbor);
-                    }
+                    RestorePath(data, endCell, paths, newPath, neighbor);
                 }
             }
 
@@ -112,29 +107,6 @@ namespace WaveSearch
             {
                 paths.Add(currentPath);
             }
-        }
-
-        private static bool AlreadyExists(List<List<Cell>> paths, List<Cell> newPath) //TODO refactor this
-        {
-            bool alreadyExists = false;
-            foreach (var p in paths)
-            {
-                var existingCellPath = p.Take(newPath.Count).ToList();
-                if (existingCellPath.Count() == newPath.Count)
-                {
-                    bool match = true;
-                    for (int i = 0; i < newPath.Count; i++)
-                    {
-                        if (newPath[i].row != existingCellPath[i].row || newPath[i].col != existingCellPath[i].col)
-                        {
-                            match = false;
-                        }
-                    }
-                    alreadyExists = match;
-                }
-            }
-
-            return alreadyExists;
         }
 
         private static void Fill(int?[,] data, Cell startCell)
@@ -214,12 +186,21 @@ namespace WaveSearch
 
             data[3, 8] = -1;
             data[3, 9] = -1;
+            data[4, 9] = -1;
 
             data[0, 9] = -1;
             data[1, 9] = -1;
             data[2, 9] = -1;
             data[3, 9] = -1;
 
+
+            data[1, 6] = -1;
+            data[2, 6] = -1;
+            data[3, 6] = -1;
+            data[4, 6] = -1;
+            data[5, 6] = -1;
+            data[6, 6] = -1;
+            data[7, 6] = -1;
 
 
 
