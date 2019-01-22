@@ -15,10 +15,13 @@ namespace WaveSearch
         static void Main(string[] args)
         {
             var data = PrepareData();
-            var startCell = new Cell { row = 6, col = 3 };
-            var endCell = new Cell { row = 0, col = 3 };
+            var startCell = new Cell { row = 0, col = 1 };
+            var endCell = new Cell { row = 0, col = 11 };
 
             SetValue(data, startCell, 0);
+            PrintData(data);
+            Console.ReadLine();
+
             Fill(data, startCell);
 
             var paths = new List<List<Cell>>();
@@ -26,7 +29,7 @@ namespace WaveSearch
             RestorePath(data, endCell, paths, currentPath, endCell);
 
             int index = 0;
-            foreach (var path in paths)
+            foreach (var path in paths.OrderBy(p=> GetPathLength(p)))
             {
                 data = PrepareData();
                 int cellIndex = 0;
@@ -45,9 +48,43 @@ namespace WaveSearch
             Console.ReadLine();
         }
 
+        private static double GetPathLength(List<Cell> path)
+        {
+            double sqlrt2 = Math.Sqrt(2);
+            double length = 0;
+            // 0 0 0
+            // 0 0 0 
+            // 0 0 0 
+            for (int i=0; i< path.Count-1; i++)
+            {
+                var currentCell = path[i];
+                var nextCell = path[i + 1];
+
+                if (nextCell.row == currentCell.row - 1 && nextCell.col == currentCell.col - 1
+                    || nextCell.row == currentCell.row - 1 && nextCell.col == currentCell.col + 1
+                    || nextCell.row == currentCell.row + 1 && nextCell.col == currentCell.col + 1
+                    || nextCell.row == currentCell.row + 1 && nextCell.col == currentCell.col - 1
+                    )
+                {
+                    length += sqlrt2;
+                }
+                else
+                {
+                    length++;
+                }
+            }
+
+            return length;
+        }
+
 
         private static void RestorePath(int?[,] data, Cell endCell, List<List<Cell>> paths, List<Cell> currentPath, Cell currentCell)
         {
+            if (paths.Count >= 1000)
+            {
+                return;
+            }
+
             var endCellValue = GetValue(data, endCell);
             if (!endCellValue.HasValue)
             {
@@ -169,6 +206,10 @@ namespace WaveSearch
             data[0, 2] = -1;
             data[1, 2] = -1;
 
+            data[2, 2] = -1;
+            data[2, 1] = -1;
+
+
             data[4, 1] = -1;
             data[4, 2] = -1;
             data[4, 3] = -1;
@@ -176,6 +217,14 @@ namespace WaveSearch
 
             data[3, 8] = -1;
             data[3, 9] = -1;
+
+            data[0, 9] = -1;
+            data[1, 9] = -1;
+            data[2, 9] = -1;
+            data[3, 9] = -1;
+
+
+
 
             data[5, 9] = -1;
             data[5, 10] = -1;
@@ -194,13 +243,12 @@ namespace WaveSearch
                     if (data[row, col].HasValue)
                     {
                         var value = data[row, col].Value;
-                        Console.Write((value == -1 ? "X" : value.ToString()));
+                        Console.Write(value == -1 ? "X  " : string.Format("{0, -3}", value) );
                     }
                     else
                     {
-                        Console.Write(" ");
+                        Console.Write("   ");
                     }
-                    Console.Write("  ");
                 }
                 Console.WriteLine();
             }
