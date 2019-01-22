@@ -36,11 +36,12 @@ namespace WaveSearch
                     cellIndex++;
                 }
                 PrintData(data);
+                Console.WriteLine("Path " + index.ToString());
                 Thread.Sleep(1000);
                 index++;
             }
 
-
+            Console.WriteLine("Done");
             Console.ReadLine();
         }
 
@@ -53,12 +54,11 @@ namespace WaveSearch
                 return;
             }
 
-            var currentCellValue = GetValue(data, currentCell);
             var neighbors = GetNeighbors(currentCell, data.GetLength(0), data.GetLength(1));
             foreach (var neighbor in neighbors)
             {
                 var cellValue = GetValue(data, neighbor);
-                if (cellValue == currentCellValue - 1)
+                if (cellValue == GetValue(data, currentCell) - 1)
                 {
                     var newPath = new List<Cell>();
                     newPath.AddRange(currentPath);
@@ -77,8 +77,8 @@ namespace WaveSearch
 
                 }
             }
-            currentCellValue = GetValue(data, currentCell);
-            if (currentCellValue == 0)
+
+            if (GetValue(data, currentCell) == 0)
             {
                 paths.Add(currentPath);
             }
@@ -125,6 +125,7 @@ namespace WaveSearch
                     {
                         SetValue(data, neighbor, currentCellValue + 1);
                         PrintData(data);
+                        Console.WriteLine("Preparing cell values");
                         Thread.Sleep(100);
                         queue.Enqueue(neighbor);
                     }
