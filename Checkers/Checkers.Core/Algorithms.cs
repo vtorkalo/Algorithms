@@ -65,13 +65,13 @@ namespace Checkers.Core
 
             foreach (var neightbor in neightbords)
             {
-                if (GetCellState(field, neightbor) == CellState.Empty && !neightbor.IsBack && !currentPath.Any())
+                if (GetCellState(field, neightbor) == CellState.Empty && !neightbor.IsBack && !currentPath.Any()) //first movement in path to empty cell
                 {
                     emptyCells.Add(neightbor);
                 }
                 else
                 {
-                    if (!currentPath.Any(p => p.Row == neightbor.Row && p.Col == neightbor.Col))
+                    if (neightbor.Row != currentCell.Row && neightbor.Col != currentCell.Col) //don't allow go back
                     {
                         enemiesPath.Add(neightbor);
                     }
@@ -80,7 +80,7 @@ namespace Checkers.Core
             }
             if (emptyCells.Any())
             {
-                paths.Add(FilterInRange(emptyCells));
+                paths.Add(FilterInRange(emptyCells)); //just move without kill - create path with 1 element
             }
 
             foreach (var nextCell in FilterInRange(enemiesPath))
