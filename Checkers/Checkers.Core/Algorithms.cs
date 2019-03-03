@@ -49,7 +49,7 @@ namespace Checkers.Core
 
         private static bool IsInRange(Cell cell)
         {
-            bool inRange = cell.Col >= 0 && cell.Col < 8 && cell.Row > 0 && cell.Row < 8;
+            bool inRange = cell.Col >= 0 && cell.Col < 8 && cell.Row >= 0 && cell.Row < 8;
             return inRange;
         }
 
