@@ -58,7 +58,10 @@ namespace Checkers.Core
 
         private static void GetPossibleMovementsRecursive(List<List<Cell>> paths, List<Cell> currentPath, CellState[,] field, Cell startCell, Cell currentCell)
         {
-            
+            if (currentCell.Row == 5 && currentCell.Col == 4)
+            {
+
+            }
          
             var currentCellState = GetCellState(field, currentCell);
             var startCellState = GetCellState(field, startCell);
@@ -87,7 +90,7 @@ namespace Checkers.Core
             {
                 paths.Add(FilterInRange(emptyCells)); //just move without kill - create path with 1 element
             }
-
+            bool anyKill = false;
             foreach (var nextCell in FilterInRange(possibleEnemies))
             {
                 var nextCellState = GetCellState(field, nextCell);
@@ -111,10 +114,15 @@ namespace Checkers.Core
                     newPath.Add(killCell);
                     Cell afterKillCell = GetCellAfterKill(currentCell, nextCell);
                     newPath.Add(afterKillCell);
+                    anyKill = true;
              
-                    paths.Add(currentPath);
+                    
                     GetPossibleMovementsRecursive(paths, newPath, field, startCell, afterKillCell);
                 }
+            }
+            if (!anyKill)
+            {
+                paths.Add(currentPath);
             }
         }
 
