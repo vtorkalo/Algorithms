@@ -30,8 +30,10 @@ namespace Checkers.Core
             return state;
         }
 
+        private static int counter = 0;
         public static List<List<Cell>> GetPossibleMovements(CellState[,] field, Cell currentCell)
         {
+            counter = 0;
             var paths = new List<List<Cell>>();
             var currentPath = new List<Cell>();
             GetPossibleMovementsRecursive(paths, currentPath, field, currentCell, currentCell);
@@ -56,10 +58,12 @@ namespace Checkers.Core
 
         private static void GetPossibleMovementsRecursive(List<List<Cell>> paths, List<Cell> currentPath, CellState[,] field, Cell startCell, Cell currentCell)
         {
+            
+         
             var currentCellState = GetCellState(field, currentCell);
             var startCellState = GetCellState(field, startCell);
             var neightbords = GetNeightbords(currentCell, startCellState);
-            var enemiesPath = new List<Cell>();
+            var possibleEnemies = new List<Cell>();
 
             var emptyCells = new List<Cell>();
 
@@ -71,9 +75,10 @@ namespace Checkers.Core
                 }
                 else
                 {
-                    if (neightbor.Row != currentCell.Row && neightbor.Col != currentCell.Col) //don't allow go back
+                    if (!currentPath.Any(p => p.Row == neightbor.Row && p.Col == neightbor.Col && p.Kill))
+                    //    if (neightbor.Row != currentCell.Row && neightbor.Col != currentCell.Col && !neightbor.Kill) //don't allow go back
                     {
-                        enemiesPath.Add(neightbor);
+                        possibleEnemies.Add(neightbor);
                     }
                 }
 
@@ -83,16 +88,45 @@ namespace Checkers.Core
                 paths.Add(FilterInRange(emptyCells)); //just move without kill - create path with 1 element
             }
 
-            foreach (var nextCell in FilterInRange(enemiesPath))
+            foreach (var nextCell in FilterInRange(possibleEnemies))
             {
                 var nextCellState = GetCellState(field, nextCell);
                 if (IsEnemy(startCellState, nextCellState) && CanKill(field, currentCell, nextCell))
                 {
-                    currentPath.Add(new Cell { Col = nextCell.Col, Row = nextCell.Row, Kill = true });
+                    counter++;
+                    if (counter == 7)
+                    {
+
+                    }
+
+                    var killCell = new Cell
+                    {
+                        Row = nextCell.Row,
+                        Col = nextCell.Col,
+                        Kill = true
+                    };
+
+                    var newPath = new List<Cell>();
+                    newPath.AddRange(currentPath);
+                    newPath.Add(killCell);
                     Cell afterKillCell = GetCellAfterKill(currentCell, nextCell);
-                    currentPath.Add(afterKillCell);
-                    GetPossibleMovementsRecursive(paths, currentPath, field, startCell, afterKillCell);
+                    newPath.Add(afterKillCell);
+             
                     paths.Add(currentPath);
+                    GetPossibleMovementsRecursive(paths, newPath, field, startCell, afterKillCell);
+                }
+            }
+        }
+
+        private static void HasError(List<Cell> cells)
+        {
+            var lastTwo = cells.Skip(cells.Count - 2).Take(2).ToList();
+            if (lastTwo.Count()== 2)
+            {
+                if (lastTwo[0].Row == 3 && lastTwo[0].Col == 2 
+                    && lastTwo[1].Row == 4 && lastTwo[1].Col == 5)
+                {
+
                 }
             }
         }

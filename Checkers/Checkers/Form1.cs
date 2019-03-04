@@ -27,6 +27,8 @@ namespace Checkers
         private CellState[,] _field = Algorithms.GetInitialField();
         private Cell _selectedCell = null;
         private List<List<Cell>> _movements = new List<List<Cell>>();
+        private List<Cell> _currentPath = new List<Cell>();
+        int _currentPathIndex = 0;
 
         private void pnlField_Paint(object sender, PaintEventArgs e)
         {
@@ -82,12 +84,15 @@ namespace Checkers
                 e.Graphics.DrawRectangle(p, _selectedCell.Col * cellSize, _selectedCell.Row * cellSize, cellSize- lineWidth, cellSize- lineWidth);
             }
 
-            foreach (var list in _movements)
-            foreach (var cell in list)
+            foreach (var cell in _currentPath)
                 {
                     var p = new Pen(Brushes.Red, lineWidth);
                     e.Graphics.DrawRectangle(p, cell.Col * cellSize, cell.Row * cellSize, cellSize - lineWidth, cellSize - lineWidth);
-                }
+                    e.Graphics.DrawString(_currentPath.IndexOf(cell).ToString(), new Font(FontFamily.GenericSerif, 15),
+                        Brushes.Black, cell.Col * cellSize, cell.Row * cellSize);
+                e.Graphics.DrawString(cell.ToString(), new Font(FontFamily.GenericSerif, 15),
+                        Brushes.Black, cell.Col * cellSize, cell.Row * cellSize+25);
+            }
         }
 
         
@@ -148,6 +153,23 @@ namespace Checkers
                 _movements = Algorithms.GetPossibleMovements(_field, _selectedCell);
                 pnlField.Refresh();
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            _field = new CellState[8, 8];
+            pnlField.Refresh();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            _currentPath = _movements[_currentPathIndex];
+            _currentPathIndex++;
+            if (_currentPathIndex>=_movements.Count)
+            {
+                _currentPathIndex = 0;
+            }
+            pnlField.Refresh();
         }
     }
 }
