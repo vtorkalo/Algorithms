@@ -150,7 +150,9 @@ namespace Checkers
         {
             if (_selectedCell!= null)
             {
-                _movements = Algorithms.GetPossibleMovements(_field, _selectedCell);
+                //_movements = Algorithms.GetPossibleMovements(_field, _selectedCell);
+                _movements = Algorithms.GetPossibleKingMovements(_field, _selectedCell);
+                //_movements =Algorithms.GetKingNeightbords(_field, CellState.WhiteKing, _selectedCell);
                 pnlField.Refresh();
             }
         }

@@ -20,16 +20,28 @@ namespace WaveSearch
 
             SetValue(data, startCell, 0);
             PrintData(data);
+            Console.WriteLine("Press enter");
             Console.ReadLine();
 
             Fill(data, startCell);
+            Console.WriteLine("Press enter");
+            Console.ReadLine();
 
             var paths = new List<List<Cell>>();
             var currentPath = new List<Cell> { endCell };
             RestorePath(data, endCell, paths, currentPath, endCell);
 
+            data = PrintPaths(data, paths);
+
+            Console.WriteLine("Done");
+            Console.WriteLine("Press enter");
+            Console.ReadLine();
+        }
+
+        private static int?[,] PrintPaths(int?[,] data, List<List<Cell>> paths)
+        {
             int index = 0;
-            foreach (var path in paths.OrderBy(p=> GetPathLength(p)))
+            foreach (var path in paths.OrderBy(p => GetPathLength(p)))
             {
                 data = PrepareData();
                 int cellIndex = 0;
@@ -40,12 +52,11 @@ namespace WaveSearch
                 }
                 PrintData(data);
                 Console.WriteLine("Path " + index.ToString());
-                Thread.Sleep(10000);
+                Thread.Sleep(100);
                 index++;
             }
 
-            Console.WriteLine("Done");
-            Console.ReadLine();
+            return data;
         }
 
         private static double GetPathLength(List<Cell> path)
@@ -78,7 +89,7 @@ namespace WaveSearch
 
         private static void RestorePath(int?[,] data, Cell endCell, List<List<Cell>> paths, List<Cell> currentPath, Cell currentCell)
         {
-            if (paths.Count >= 100)
+            if (paths.Count >= 1000)
             {
                 return;
             }
@@ -127,7 +138,7 @@ namespace WaveSearch
                     {
                         SetValue(data, neighbor, currentCellValue + 1);
                         PrintData(data);
-                        Console.WriteLine("Preparing cell values");
+                        Console.WriteLine("Preparing cell values.");
                         Thread.Sleep(50);
                         queue.Enqueue(neighbor);
                     }
@@ -232,8 +243,6 @@ namespace WaveSearch
                 Console.WriteLine();
             }
         }
-
-
     }
 
     public struct Cell
