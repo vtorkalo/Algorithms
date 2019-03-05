@@ -5,6 +5,20 @@ using System.Text;
 
 namespace Checkers.Core
 {
+
+    public class CellComparer : IEqualityComparer<Cell>
+    {
+        public bool Equals(Cell x, Cell y)
+        {
+            return Algorithms.CompareCells(x, y);
+        }
+
+        public int GetHashCode(Cell obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
     public static class Algorithms
     {
         public static CellState[,] GetInitialField()
@@ -24,6 +38,12 @@ namespace Checkers.Core
             return result;
         }
 
+        public static bool CompareCells(Cell cell1, Cell cell2)
+        {
+            bool equal = cell1.Row == cell2.Row && cell1.Col == cell2.Col;
+            return equal;
+        }
+
         public static CellState GetCellState(CellState[,] field, Cell currentCell)
         {
             var state = field[currentCell.Row, currentCell.Col];
@@ -31,49 +51,124 @@ namespace Checkers.Core
         }
 
 
-        public static List<List<Cell>> GetPossibleKingMovements(CellState[,] field, Cell currentCell)
+        public static List<List<Cell>> GetPossibleKingMovements(CellState[,] field, Cell startCell)
         {
             var paths = new List<List<Cell>>();
             var currentPath = new List<Cell>();
-            GetPossibleKingMovementsRecursive(paths, currentPath, field, currentCell, currentCell);
+            GetPossibleKingMovementsRecursive(paths, currentPath, field, startCell, startCell);
             if (paths.Any(p => p.Any(x => x.Kill))) //Any kill possible - remove no paths without kill
             {
                 paths = paths.Where(p => p.Any(x => x.Kill)).ToList();
             }
-            return paths;
+            var comparer = new CellComparer();
+
+            var sortedByLength = paths.OrderByDescending(p => p.Count).ToList();
+
+            //var result = new List<List<Cell>>();
+            //foreach (var path in sortedByLength)
+            //{
+            //    if (!result.Any(p => p.Intersect(path, comparer).SequenceEqual(path, comparer)))
+            //    {
+            //        result.Add(path);
+            //    }
+            //}
+            //paths = result;
+
+
+            //var startCellState = GetCellState(field, startCell);
+            //foreach (var path in paths)
+            //{
+            //    if (path.Any(x => x.Kill))
+            //    {
+            //        var beforeLast = path.Skip(path.Count - 2).Take(1).Single();
+            //        var lastCell = path.Last();
+            //        var horDir = lastCell.Col - beforeLast.Col;
+            //        var vertDir = lastCell.Row - beforeLast.Row;
+
+            //        path.AddRange(
+            //            GetKingNeightbords(field, startCell, startCellState, path.Last(),
+            //            (c, distance) =>
+            //            {
+            //                return new Cell
+            //                {
+            //                    Row = startCell.Row + distance * vertDir,
+            //                    Col = startCell.Col + distance * horDir
+            //                };
+            //            }));
+            //    }
+            //}
+
+
+            var filtered = new List<List<Cell>>();
+            foreach (var path in paths)
+            {
+                bool valid = true;
+                for (int i=0; i<path.Count-1; i++)
+                {
+                    if (Math.Abs(path[i].Row - path[i + 1].Row) != 1 
+                     || Math.Abs(path[i].Col - path[i+1].Col) != 1)
+                    {
+                        valid = false;
+                    }
+                }
+                if (valid)
+                {
+                    filtered.Add(path);
+                }
+            }
+
+
+            return filtered.OrderByDescending(p=>p.Count(x=>x.Kill)).ToList();
+
+          //  return paths;
         }
 
         private static void GetPossibleKingMovementsRecursive(List<List<Cell>> paths, List<Cell> currentPath, CellState[,] field, Cell startCell, Cell currentCell)
         {
             var startCellState = GetCellState(field, startCell);
-            var lines = GetKingNeightbords(field, startCellState, currentCell).Where(l=>l.Any(c=>c.Kill)).ToList();
-            
+            var lines = GetKingNeightbords(field, startCell, startCellState, currentCell).ToList();
+
             foreach (var line in lines)
             {
                 bool killFlag = false;
                 var newPath = new List<Cell>();
                 newPath.AddRange(currentPath);
-                
+
                 foreach (var cell in line)
                 {
-
-                    newPath.Add(cell);
-                    if (!currentPath.Any(c => c.Row == cell.Row && c.Col == cell.Col))
+                    if (!currentPath.Any(c => CompareCells(c, cell)))
                     {
+                        newPath.Add(cell);
                         if (killFlag)
                         {
                             GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cell);
+                            killFlag = false;
                         }
-
                         if (cell.Kill)
                         {
                             killFlag = true;
                         }
                     }
                 }
+                if (!newPath.Any(c => c.Kill) )
+                {
+                    paths.Add(newPath.ToList());
+                }
             }
+
+           
             paths.Add(currentPath.ToList());
         }
+
+        private static Cell GetNextCell(Cell currentCell, int distance)
+        {
+            return new Cell
+            {
+                Row = currentCell.Row - distance,
+                Col = currentCell.Col + distance
+            };
+        }
+
 
         public static List<List<Cell>> GetPossibleMovements(CellState[,] field, Cell currentCell)
         {
@@ -115,12 +210,11 @@ namespace Checkers.Core
                 }
                 else
                 {
-                    if (!currentPath.Any(p => p.Row == neightbor.Row && p.Col == neightbor.Col && p.Kill))
+                    if (!currentPath.Any(p => CompareCells(p, neightbor) && p.Kill))
                     {
                         possibleEnemies.Add(neightbor);
                     }
                 }
-
             }
             if (emptyCells.Any())
             {
@@ -155,18 +249,18 @@ namespace Checkers.Core
             }
         }
 
-        public static List<List<Cell>> GetKingNeightbords(CellState[,] field, CellState startCellState, Cell currentCell)
+        public static List<List<Cell>> GetKingNeightbords(CellState[,] field, Cell startCell, CellState startCellState, Cell currentCell)
         {
             var result = new List<List<Cell>>();
-            result.Add(GetKingNeightbords(field, startCellState, currentCell, GetRightTopNextCell));
-            result.Add(GetKingNeightbords(field, startCellState, currentCell, GetRigthBottomNextCell));
-            result.Add(GetKingNeightbords(field, startCellState, currentCell, GetLeftTopNextCell));
-            result.Add(GetKingNeightbords(field, startCellState, currentCell, GetLeftBottomNextCell));
+            result.Add(GetKingNeightbords(field, startCell, startCellState, currentCell, GetRightTopNextCell));
+            result.Add(GetKingNeightbords(field, startCell, startCellState, currentCell, GetRigthBottomNextCell));
+            result.Add(GetKingNeightbords(field, startCell, startCellState, currentCell, GetLeftTopNextCell));
+            result.Add(GetKingNeightbords(field, startCell, startCellState, currentCell, GetLeftBottomNextCell));
 
             return result;
         }
 
-        private static List<Cell> GetKingNeightbords(CellState[,] field, CellState startCellState, Cell currentCell,
+        private static List<Cell> GetKingNeightbords(CellState[,] field, Cell startCell, CellState startCellState, Cell currentCell,
             Func<Cell, int, Cell> getter)
         {
             var result = new List<Cell>();
@@ -175,7 +269,7 @@ namespace Checkers.Core
             while (IsInRange(newCell))
             {
                 var newCellState = GetCellState(field, newCell);
-                if (newCellState != CellState.Empty && !IsEnemy(startCellState, newCellState))
+                if (newCellState != CellState.Empty && !IsEnemy(startCellState, newCellState) && !CompareCells(newCell, startCell))
                 {
                     break;
                 }
@@ -183,12 +277,16 @@ namespace Checkers.Core
                 if (IsEnemy(startCellState, newCellState))
                 {
                     var cellAfterEnemy = getter(currentCell, distance + 1);
-                    var cellAfterEnemyState = GetCellState(field, cellAfterEnemy);
-                    if (cellAfterEnemyState != CellState.Empty)
+                    if (IsInRange(cellAfterEnemy))
                     {
-                        break;
+                        var cellAfterEnemyState = GetCellState(field, cellAfterEnemy);
+
+                        if (cellAfterEnemyState != CellState.Empty && !CompareCells(cellAfterEnemy, startCell))
+                        {
+                            break;
+                        }
+                        newCell.Kill = true;
                     }
-                    newCell.Kill = true;
                 }
 
                 result.Add(newCell);
