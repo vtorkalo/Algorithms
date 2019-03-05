@@ -116,9 +116,10 @@ namespace Checkers.Core
                     filtered.Add(path);
                 }
             }
+            paths = filtered;
 
 
-            return filtered.OrderByDescending(p=>p.Count(x=>x.Kill)).ToList();
+            return paths.OrderByDescending(p=>p.Count(x=>x.Kill)).ToList();
 
           //  return paths;
         }
@@ -142,7 +143,7 @@ namespace Checkers.Core
                         if (killFlag)
                         {
                             GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cell);
-                            killFlag = false;
+                           
                         }
                         if (cell.Kill)
                         {
@@ -150,6 +151,7 @@ namespace Checkers.Core
                         }
                     }
                 }
+                killFlag = false;
                 if (!newPath.Any(c => c.Kill) )
                 {
                     paths.Add(newPath.ToList());
