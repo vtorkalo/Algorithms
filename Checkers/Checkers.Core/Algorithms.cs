@@ -77,24 +77,23 @@ namespace Checkers.Core
 
         static CellComparer _comparer = new CellComparer();
 
-        private static bool AlreadyExists(List<List<Cell>> paths, List<Cell> currentPath)
-        {
-            return false;
+        //private static bool AlreadyExists(List<List<Cell>> paths, List<Cell> currentPath)
+        //{
 
-            bool exists = false;
-            var result = new List<List<Cell>>();
-            foreach (var path in paths)
-            {
-                if (paths.Any() && currentPath.Count > 1 &&
-                    path.Take(currentPath.Count).SequenceEqual(currentPath, _comparer))
-                {
-                    exists = true;
-                    break;
-                }
-            }
+        //    bool exists = false;
+        //    var result = new List<List<Cell>>();
+        //    foreach (var path in paths)
+        //    {
+        //        if (paths.Any() && currentPath.Count > 1 &&
+        //            path.Take(currentPath.Count).SequenceEqual(currentPath, _comparer))
+        //        {
+        //            exists = true;
+        //            break;
+        //        }
+        //    }
 
-            return exists;
-        }
+        //    return exists;
+        //}
 
         public static List<List<Cell>> GetPossibleKingMovements(CellState[,] field, Cell startCell)
         {
@@ -108,99 +107,87 @@ namespace Checkers.Core
             var comparer = new CellComparer();
 
 
-            var trimmedResult = new List<List<Cell>>();
-            foreach (var path in paths)
-            {
-                var lastKill = path.LastOrDefault(p => p.Kill);
-                if (lastKill != null)
-                {
-                    var lastKillIndex = path.IndexOf(lastKill);
-                    var trimmedPath = path.Take(lastKillIndex + 1).ToList();
-                    trimmedResult.Add(trimmedPath);
-                }
-                else
-                {
-                    trimmedResult.Add(path);
-                }
-            }
-            paths = trimmedResult.OrderByDescending(p => p.Count).ToList();
-
-
-            var result = new List<List<Cell>>();
-            foreach (var path in paths)
-            {
-                if (!result.Any(r => r.Take(path.Count).SequenceEqual(path, _comparer)))
-                {
-                    result.Add(path);
-                }
-            }
-            paths = result;
-
-
-            var startCellState = GetCellState(field, startCell);
-
-            var expandedPaths = new List<List<Cell>>();
-            foreach (var path in paths)
-            {
-                if (path.Any(x => x.Kill))
-                {
-                    var beforeLast = path.Skip(path.Count - 2).Take(1).Single();
-                    var lastCell = path.Last();
-                    int horDir = lastCell.Col - beforeLast.Col;
-                    int vertDir = lastCell.Row - beforeLast.Row;
-                    var expandedPath = new List<Cell>();
-                    expandedPath.AddRange(path);
-                    expandedPath.AddRange(
-                        GetKingNeightbords(field, lastCell, startCellState, path.Last(),
-                        (c, distance) =>
-                        {
-                            return new Cell
-                            {
-                                Row = lastCell.Row + distance * vertDir,
-                                Col = lastCell.Col + distance * horDir
-                            };
-                        }));
-                    expandedPaths.Add(expandedPath);
-                }
-            }
-            paths = expandedPaths;
-
-
-            //var filtered = new List<List<Cell>>();
+            //var trimmedResult = new List<List<Cell>>();
             //foreach (var path in paths)
             //{
-            //    bool valid = true;
-            //    for (int i=0; i<path.Count-1; i++)
+            //    var lastKill = path.LastOrDefault(p => p.Kill);
+            //    if (lastKill != null)
             //    {
-            //        if (Math.Abs(path[i].Row - path[i + 1].Row) != 1 
-            //         || Math.Abs(path[i].Col - path[i+1].Col) != 1)
-            //        {
-            //            valid = false;
-            //        }
+            //        var lastKillIndex = path.IndexOf(lastKill);
+            //        var trimmedPath = path.Take(lastKillIndex + 1).ToList();
+            //        trimmedResult.Add(trimmedPath);
             //    }
-            //    if (valid)
+            //    else
             //    {
-            //        filtered.Add(path);
+            //        trimmedResult.Add(path);
             //    }
             //}
-            //paths = filtered;
+            //paths = trimmedResult.OrderByDescending(p => p.Count).ToList();
 
+
+            //var result = new List<List<Cell>>();
+            //foreach (var path in paths)
+            //{
+            //    if (!result.Any(r => r.Take(path.Count).SequenceEqual(path, _comparer)))
+            //    {
+            //        result.Add(path);
+            //    }
+            //}
+            //paths = result;
+
+
+
+
+
+
+            //  var startCellState = GetCellState(field, startCell);
+            //var expandedPaths = new List<List<Cell>>();
+            //foreach (var path in paths)
+            //{
+            //    if (path.Any(x => x.Kill))
+            //    {
+            //        path.Insert(0, startCell);
+            //        var beforeLast = path.Skip(path.Count - 2).Take(1).Single();
+            //        var lastCell = path.Last();
+            //        int horDir = lastCell.Col - beforeLast.Col;
+            //        int vertDir = lastCell.Row - beforeLast.Row;
+
+
+            //        var neigthboards = GetKingNeightbords(field, startCell, startCellState, path.Last(),
+            //            (c, distance) =>
+            //            {
+            //                return new Cell
+            //                {
+            //                    Row = lastCell.Row + distance * vertDir,
+            //                    Col = lastCell.Col + distance * horDir
+            //                };
+            //            });
+
+            //        expandedPaths.Add(path);
+            //        expandedPaths.Last().Add(neigthboards.First());
+            //        foreach (var n in neigthboards.Skip(1))
+            //        {                        
+            //            var expandedPath = new List<Cell>();
+            //            expandedPath.AddRange(expandedPaths.Last());
+            //            expandedPath.Add(n);
+            //            expandedPaths.Add(expandedPath);
+            //        }
+            //    }
+            //}
+            //paths = expandedPaths;
 
             return paths.OrderByDescending(p => p.Count(x => x.Kill)).ToList();
         }
 
-        private static bool GetPossibleKingMovementsRecursive(List<List<Cell>> paths, List<Cell> currentPath, CellState[,] field, Cell startCell, Cell currentCell)
+        private static void GetPossibleKingMovementsRecursive(List<List<Cell>> paths, List<Cell> currentPath, CellState[,] field, Cell startCell, Cell currentCell)
         {
             var startCellState = GetCellState(field, startCell);
             var lines = GetKingNeightbords(field, startCell, startCellState, currentCell).ToList();
-            bool anyKill = false;
-            bool pathsAdded = false;
             foreach (var line in lines)
             {
                 bool killFlag = false;
                 var newPath = new List<Cell>();
                 newPath.AddRange(currentPath);
-                bool wasAdded = false;
                 foreach (var cell in line)
                 {
                     if (cell == line.Last())
@@ -214,12 +201,11 @@ namespace Checkers.Core
 
                         if (killFlag)
                         {
-                            wasAdded = GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cell);
+                            GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cell);
                         }
                         if (cell.Kill)
                         {
                             killFlag = true;
-                            anyKill = true;
                         }
                     }
                     else
@@ -229,31 +215,18 @@ namespace Checkers.Core
                 }
 
                 if (!newPath.Any(c => c.Kill))
-                 {
-                     paths.Add(newPath.ToList());
-                     pathsAdded = true;
-                 }
+                {
+                    paths.Add(newPath.ToList());
+                }
 
             }
 
-            if (currentPath.Any() && !AlreadyExists(paths, currentPath)
+            if (currentPath.Any()
                  && currentPath.Last().IsLast)
             {
                 paths.Add(currentPath.ToList());
-                pathsAdded = true;
             }
-            return pathsAdded;
         }
-
-        private static Cell GetNextCell(Cell currentCell, int distance)
-        {
-            return new Cell
-            {
-                Row = currentCell.Row - distance,
-                Col = currentCell.Col + distance
-            };
-        }
-
 
         public static List<List<Cell>> GetPossibleMovements(CellState[,] field, Cell currentCell)
         {
