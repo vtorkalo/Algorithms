@@ -43,18 +43,18 @@ namespace Checkers.Core
                 { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
             };
 
+            result[3, 4] = CellState.WhiteKing;
+
+
+            result[4, 5] = CellState.Black;
+            result[4, 3] = CellState.Black;
+            result[6, 3] = CellState.Black;
+            result[6, 5] = CellState.Black;
+            result[1, 6] = CellState.Black;
+
+
+
             //result[3, 4] = CellState.WhiteKing;
-
-
-            //result[4, 5] = CellState.Black;
-            //result[4, 3] = CellState.Black;
-            //result[6, 3] = CellState.Black;
-            //result[6, 5] = CellState.Black;
-            //result[1, 6] = CellState.Black;
-
-
-
-
             //result[4, 5] = CellState.Black;
             //result[6, 5] = CellState.Black;
             //result[5, 2] = CellState.Black;
@@ -63,11 +63,11 @@ namespace Checkers.Core
 
 
 
-            result[7, 0] = CellState.WhiteKing;
+            //result[7, 0] = CellState.WhiteKing;
 
-            result[6, 1] = CellState.Black;
-            result[3, 2] = CellState.Black;
-            result[2, 3] = CellState.Black;
+            //result[6, 1] = CellState.Black;
+            //result[3, 2] = CellState.Black;
+            //result[2, 3] = CellState.Black;
 
 
             return result;
@@ -222,7 +222,7 @@ namespace Checkers.Core
                         {
 
                             var forceTurns = cellNeightbords.Where(n => n.Any(x => x.Kill && !newPath.Any(c => CompareCells(c, x))));
-                            if (forceTurns.Any())
+                            if (forceTurns.Any() && !cell.Kill)
                             {
                                 var firstTurn = forceTurns.First();
                                 firstTurn.Insert(0, cell);
