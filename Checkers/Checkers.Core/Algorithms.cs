@@ -77,23 +77,40 @@ namespace Checkers.Core
 
         static CellComparer _comparer = new CellComparer();
 
-        //private static bool AlreadyExists(List<List<Cell>> paths, List<Cell> currentPath)
-        //{
+        private static bool AlreadyExists(List<List<Cell>> paths, List<Cell> currentPath)
+        {
 
-        //    bool exists = false;
-        //    var result = new List<List<Cell>>();
-        //    foreach (var path in paths)
-        //    {
-        //        if (paths.Any() && currentPath.Count > 1 &&
-        //            path.Take(currentPath.Count).SequenceEqual(currentPath, _comparer))
-        //        {
-        //            exists = true;
-        //            break;
-        //        }
-        //    }
+            bool exists = false;
+            var result = new List<List<Cell>>();
+            var trimmedCurrent = TrimmPath(currentPath);
+            foreach (var path in paths)
+            {
+                var trimmedPath = TrimmPath(path);
+                if (trimmedCurrent.Count > 1 &&
+                    trimmedPath.Take(trimmedCurrent.Count).SequenceEqual(trimmedCurrent, _comparer))
+                {
+                    exists = true;
+                    break;
+                }
+            }
 
-        //    return exists;
-        //}
+            return exists;
+        }
+
+        static List<Cell> TrimmPath(List<Cell> path)
+        {
+            var lastKill = path.LastOrDefault(p => p.Kill);
+            if (lastKill != null)
+            {
+                var lastKillIndex = path.IndexOf(lastKill);
+                var trimmedPath = path.Take(lastKillIndex + 1).ToList();
+                return trimmedPath;
+            }
+            else
+            {
+                return path.ToList();
+            }
+        }
 
         public static List<List<Cell>> GetPossibleKingMovements(CellState[,] field, Cell startCell)
         {
@@ -110,17 +127,7 @@ namespace Checkers.Core
             //var trimmedResult = new List<List<Cell>>();
             //foreach (var path in paths)
             //{
-            //    var lastKill = path.LastOrDefault(p => p.Kill);
-            //    if (lastKill != null)
-            //    {
-            //        var lastKillIndex = path.IndexOf(lastKill);
-            //        var trimmedPath = path.Take(lastKillIndex + 1).ToList();
-            //        trimmedResult.Add(trimmedPath);
-            //    }
-            //    else
-            //    {
-            //        trimmedResult.Add(path);
-            //    }
+            //    trimmedResult.Add(TrimmPath(path));
             //}
             //paths = trimmedResult.OrderByDescending(p => p.Count).ToList();
 
@@ -134,8 +141,6 @@ namespace Checkers.Core
             //    }
             //}
             //paths = result;
-
-
 
 
 
@@ -214,7 +219,7 @@ namespace Checkers.Core
                     }
                 }
 
-                if (!newPath.Any(c => c.Kill))
+                if (!newPath.Any(c => c.Kill) && !AlreadyExists(paths,currentPath))
                 {
                     paths.Add(newPath.ToList());
                 }
