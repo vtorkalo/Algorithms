@@ -43,14 +43,14 @@ namespace Checkers.Core
                 { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
             };
 
-            result[3, 4] = CellState.WhiteKing;
+            //result[3, 4] = CellState.WhiteKing;
 
 
-            result[4, 5] = CellState.Black;
-            result[4, 3] = CellState.Black;
-            result[6, 3] = CellState.Black;
-            result[6, 5] = CellState.Black;
-            result[1, 6] = CellState.Black;
+            //result[4, 5] = CellState.Black;
+            //result[4, 3] = CellState.Black;
+            //result[6, 3] = CellState.Black;
+            //result[6, 5] = CellState.Black;
+            //result[1, 6] = CellState.Black;
 
 
 
@@ -59,6 +59,16 @@ namespace Checkers.Core
             //result[6, 5] = CellState.Black;
             //result[5, 2] = CellState.Black;
             //result[2, 1] = CellState.Black;
+
+
+
+
+            result[7, 0] = CellState.WhiteKing;
+
+            result[6, 1] = CellState.Black;
+            result[3, 2] = CellState.Black;
+            result[2, 3] = CellState.Black;
+
 
             return result;
         }
@@ -188,7 +198,7 @@ namespace Checkers.Core
         {
             var startCellState = GetCellState(field, startCell);
             var lines = GetKingNeightbords(field, startCell, startCellState, currentCell).ToList();
-            foreach (var line in lines)
+            foreach (var line in lines.Where(x=>x.Any(a=>a.Kill)))
             {
                 bool killFlag = false;
                 var newPath = new List<Cell>();
@@ -199,16 +209,43 @@ namespace Checkers.Core
                     {
                         cell.IsLast = true;
                     }
+                    
+                    //TODO break look if any kill near possible
 
                     if (!currentPath.Any(c => CompareCells(c, cell)))
                     {
                         newPath.Add(cell);
 
-                        if (killFlag)
+                        var lastKill = newPath.LastOrDefault(x => x.Kill);
+                        var cellNeightbords = GetKingNeightbords(field, startCell, startCellState, cell).Where(n => n.Any(x => x.Kill)).ToList();
+                        if (lastKill != null)
+                        {
+
+                            var forceTurns = cellNeightbords.Where(n => n.Any(x => x.Kill && !newPath.Any(c => CompareCells(c, x))));
+                            if (forceTurns.Any())
+                            {
+                                var firstTurn = forceTurns.First();
+                                firstTurn.Insert(0, cell);
+                                var firstKillInTurn = firstTurn.First(x => x.Kill);
+
+                                var cellBeforeKull = firstTurn[firstTurn.IndexOf(firstKillInTurn)-1];
+                                var cellAfterKill = GetCellAfterKill(cellBeforeKull, firstKillInTurn);
+                                if (IsInRange(cellAfterKill))
+                                {
+
+                                    newPath.AddRange(firstTurn.Take(firstTurn.IndexOf(firstKillInTurn)+2));
+                                    cell.IsLast = true;
+                                    GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cellAfterKill);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (killFlag )
                         {
                             GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cell);
                         }
-                        if (cell.Kill)
+                        if (cell.Kill && !currentCell.Kill)
                         {
                             killFlag = true;
                         }
@@ -219,15 +256,15 @@ namespace Checkers.Core
                     }
                 }
 
-                if (!newPath.Any(c => c.Kill) && !AlreadyExists(paths,currentPath))
+                if (!newPath.Any(c => c.Kill))
                 {
                     paths.Add(newPath.ToList());
                 }
 
             }
 
-            if (currentPath.Any()
-                 && currentPath.Last().IsLast)
+            if (currentPath.Any())
+               //  && currentPath.Last().IsLast)
             {
                 paths.Add(currentPath.ToList());
             }
