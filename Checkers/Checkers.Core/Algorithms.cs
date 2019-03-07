@@ -43,22 +43,22 @@ namespace Checkers.Core
                 { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
             };
 
-            result[3, 4] = CellState.WhiteKing;
-
-
-            result[4, 5] = CellState.Black;
-            result[4, 3] = CellState.Black;
-            result[6, 3] = CellState.Black;
-            result[6, 5] = CellState.Black;
-            result[1, 6] = CellState.Black;
-
-
-
             //result[3, 4] = CellState.WhiteKing;
+
+
             //result[4, 5] = CellState.Black;
+            //result[4, 3] = CellState.Black;
+            //result[6, 3] = CellState.Black;
             //result[6, 5] = CellState.Black;
-            //result[5, 2] = CellState.Black;
-            //result[2, 1] = CellState.Black;
+            //result[1, 6] = CellState.Black;
+
+
+
+            result[3, 4] = CellState.WhiteKing;
+            result[4, 5] = CellState.Black;
+            result[6, 5] = CellState.Black;
+            result[5, 2] = CellState.Black;
+            result[2, 1] = CellState.Black;
 
 
 
@@ -130,66 +130,66 @@ namespace Checkers.Core
             if (paths.Any(p => p.Any(x => x.Kill))) //Any kill possible - remove no paths without kill
             {
                 paths = paths.Where(p => p.Any(x => x.Kill)).ToList();
-            }
-            var comparer = new CellComparer();
 
 
-            var trimmedResult = new List<List<Cell>>();
-            foreach (var path in paths)
-            {
-                trimmedResult.Add(TrimmPath(path));
-            }
-            paths = trimmedResult.OrderByDescending(p => p.Count).ToList();
 
-
-            var result = new List<List<Cell>>();
-            foreach (var path in paths)
-            {
-                if (!result.Any(r => r.Take(path.Count).SequenceEqual(path, _comparer)))
+                var trimmedResult = new List<List<Cell>>();
+                foreach (var path in paths)
                 {
-                    result.Add(path);
+                    trimmedResult.Add(TrimmPath(path));
                 }
-            }
-            paths = result;
+                paths = trimmedResult.OrderByDescending(p => p.Count).ToList();
 
 
-
-
-            var startCellState = GetCellState(field, startCell);
-            var expandedPaths = new List<List<Cell>>();
-            foreach (var path in paths)
-            {
-                if (path.Any(x => x.Kill))
+                var result = new List<List<Cell>>();
+                foreach (var path in paths)
                 {
-                    path.Insert(0, startCell);
-                    var beforeLast = path.Skip(path.Count - 2).Take(1).Single();
-                    var lastCell = path.Last();
-                    int horDir = lastCell.Col - beforeLast.Col;
-                    int vertDir = lastCell.Row - beforeLast.Row;
-
-
-                    var neigthboards = GetKingNeightbords(field, startCell, startCellState, path.Last(),
-                        (c, distance) =>
-                        {
-                            return new Cell
-                            {
-                                Row = lastCell.Row + distance * vertDir,
-                                Col = lastCell.Col + distance * horDir
-                            };
-                        });
-
-                    expandedPaths.Add(path);
-                    expandedPaths.Last().Add(neigthboards.First());
-                    foreach (var n in neigthboards.Skip(1))
+                    if (!result.Any(r => r.Take(path.Count).SequenceEqual(path, _comparer)))
                     {
-                        var expandedPath = new List<Cell>();
-                        expandedPath.AddRange(expandedPaths.Last());
-                        expandedPath.Add(n);
-                        expandedPaths.Add(expandedPath);
+                        result.Add(path);
                     }
                 }
+                paths = result;
+
+
+
+
+                var startCellState = GetCellState(field, startCell);
+                var expandedPaths = new List<List<Cell>>();
+                foreach (var path in paths)
+                {
+                    if (path.Any(x => x.Kill))
+                    {
+                        path.Insert(0, startCell);
+                        var beforeLast = path.Skip(path.Count - 2).Take(1).Single();
+                        var lastCell = path.Last();
+                        int horDir = lastCell.Col - beforeLast.Col;
+                        int vertDir = lastCell.Row - beforeLast.Row;
+
+
+                        var neigthboards = GetKingNeightbords(field, startCell, startCellState, path.Last(),
+                            (c, distance) =>
+                            {
+                                return new Cell
+                                {
+                                    Row = lastCell.Row + distance * vertDir,
+                                    Col = lastCell.Col + distance * horDir
+                                };
+                            });
+
+                        expandedPaths.Add(path);
+                        expandedPaths.Last().Add(neigthboards.First());
+                        foreach (var n in neigthboards.Skip(1))
+                        {
+                            var expandedPath = new List<Cell>();
+                            expandedPath.AddRange(expandedPaths.Last());
+                            expandedPath.Add(n);
+                            expandedPaths.Add(expandedPath);
+                        }
+                    }
+                }
+                paths = expandedPaths;
             }
-            paths = expandedPaths;
 
             return paths.OrderByDescending(p => p.Count(x => x.Kill)).ToList();
         }
@@ -198,7 +198,7 @@ namespace Checkers.Core
         {
             var startCellState = GetCellState(field, startCell);
             var lines = GetKingNeightbords(field, startCell, startCellState, currentCell).ToList();
-            foreach (var line in lines.Where(x => x.Any(a => a.Kill)))
+            foreach (var line in lines)
             {
                 bool killFlag = false;
                 var newPath = new List<Cell>();
