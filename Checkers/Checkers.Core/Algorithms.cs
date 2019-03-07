@@ -205,13 +205,6 @@ namespace Checkers.Core
                 newPath.AddRange(currentPath);
                 foreach (var cell in line)
                 {
-                    if (cell == line.Last())
-                    {
-                        cell.IsLast = true;
-                    }
-
-                    //TODO break look if any kill near possible
-
                     if (!currentPath.Any(c => CompareCells(c, cell)))
                     {
                         newPath.Add(cell);
@@ -235,7 +228,6 @@ namespace Checkers.Core
                                     {
 
                                         newPath.AddRange(firstTurn.Take(firstTurn.IndexOf(firstKillInTurn) + 2));
-                                        cell.IsLast = true;
                                         GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cellAfterKill);
                                         break;
                                     }
@@ -245,9 +237,6 @@ namespace Checkers.Core
                                     GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cell);
                                 }
                             }
-
-
-                          //  GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cell);
                         }
                         if (cell.Kill && !currentCell.Kill)
                         {
@@ -268,7 +257,6 @@ namespace Checkers.Core
             }
 
             if (currentPath.Any())
-            //  && currentPath.Last().IsLast)
             {
                 paths.Add(currentPath.ToList());
             }
