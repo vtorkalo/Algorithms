@@ -47,34 +47,30 @@ namespace Checkers.Core
 
                         if (killFlag)
                         {
-                            var lastKill = newPath.LastOrDefault(x => x.Kill);
                             var cellNeightbors = _kingNeightborsGenerator.GetKingNeightbors(field, startCell, startCellState, cell).Where(n => n.Any(x => x.Kill)).ToList();
-                            if (lastKill != null)
-                            {
-                                var forceTurns = cellNeightbors.Where(n => !n.Intersect(newPath, _comparer).Any());
+                            var forceTurns = cellNeightbors.Where(n => !n.Intersect(newPath, _comparer).Any());
 
-                                if (forceTurns.Any())
+                            if (forceTurns.Any())
+                            {
+                                foreach (var turn in forceTurns)
                                 {
-                                    foreach (var turn in forceTurns)
+                                    var turnNewPath = new List<Cell>();
+                                    turnNewPath.AddRange(newPath);
+                                    turn.Insert(0, cell);
+                                    var firstKillInTurn = turn.First(x => x.Kill);
+                                    var cellBeforeKull = turn[turn.IndexOf(firstKillInTurn) - 1];
+                                    var cellAfterKill = Helpers.GetCellAfterKill(cellBeforeKull, firstKillInTurn);
+                                    if (Helpers.IsInRange(cellAfterKill))
                                     {
-                                        var turnNewPath = new List<Cell>();
-                                        turnNewPath.AddRange(newPath);
-                                        turn.Insert(0, cell);
-                                        var firstKillInTurn = turn.First(x => x.Kill);
-                                        var cellBeforeKull = turn[turn.IndexOf(firstKillInTurn) - 1];
-                                        var cellAfterKill = Helpers.GetCellAfterKill(cellBeforeKull, firstKillInTurn);
-                                        if (Helpers.IsInRange(cellAfterKill))
-                                        {
-                                            turnNewPath.AddRange(turn.Take(turn.IndexOf(firstKillInTurn) + 2));
-                                            GetPossibleKingMovementsRecursive(paths, turnNewPath.ToList(), field, startCell, cellAfterKill);
-                                        }
+                                        turnNewPath.AddRange(turn.Take(turn.IndexOf(firstKillInTurn) + 2));
+                                        GetPossibleKingMovementsRecursive(paths, turnNewPath.ToList(), field, startCell, cellAfterKill);
                                     }
-                                    break;
                                 }
-                                else
-                                {
-                                    GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cell);
-                                }
+                                break;
+                            }
+                            else
+                            {
+                                GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cell);
                             }
                         }
                         if (cell.Kill)
