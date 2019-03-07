@@ -11,7 +11,6 @@ namespace Checkers.Core
         public bool Kill { get; set; }
         public bool IsBack { get; private set; }
 
-        public Cell() { }
         public Cell(int row, int col, bool isBack = false, bool kill = false)
         {
             this.Row = row;

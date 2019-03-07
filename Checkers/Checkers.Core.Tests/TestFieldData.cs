@@ -55,6 +55,7 @@ namespace Checkers.Core.Tests
             result[6, 1] = CellState.Black;
             result[3, 2] = CellState.Black;
             result[2, 3] = CellState.Black;
+            result[5, 4] = CellState.Black;
 
             return result;
         }

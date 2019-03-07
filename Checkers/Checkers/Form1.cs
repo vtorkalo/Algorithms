@@ -24,7 +24,7 @@ namespace Checkers
 
         private void button1_Click(object sender, EventArgs e)
         {
-            _field = TestFieldData.King_Moves_Case1();
+            _field = TestFieldData.King_Moves_Case4();
             pnlField.Refresh();
         }
 
@@ -195,6 +195,32 @@ namespace Checkers
                 _currentPathIndex = 0;
             }
             pnlField.Refresh();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append("new List<List<Cell>>");
+            builder.Append("{");
+            foreach (var path in _movements)
+            {
+                builder.Append("new List<Cell>{");
+                foreach (var cell in path)
+                {
+                    builder.Append(string.Format("new Cell({0}, {1})", cell.Row, cell.Col));
+                    if (cell != path.Last())
+                    {
+                        builder.Append(",");
+                    }
+                }
+                builder.Append("}");
+                if (path != _movements.Last())
+                {
+                    builder.Append(",");
+                }
+            }
+            builder.Append("}");
+            MessageBox.Show(builder.ToString());
         }
     }
 }
