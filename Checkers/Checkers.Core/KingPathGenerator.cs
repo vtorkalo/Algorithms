@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Checkers.Core
 {
-    public class KingPathGenerator
+    public class KingPathGenerator : IPathGenerator
     {
         private CellComparer _comparer = new CellComparer();
         private KingNeightborGenerator _kingNeightborsGenerator = new KingNeightborGenerator(); 
@@ -14,7 +14,7 @@ namespace Checkers.Core
         {
         }
 
-        public List<List<Cell>> GetPossibleKingMovements(CellState[,] field, Cell startCell)
+        public List<List<Cell>> GetPossibleMovements(CellState[,] field, Cell startCell)
         {
             var paths = new List<List<Cell>>();
             var currentPath = new List<Cell>();

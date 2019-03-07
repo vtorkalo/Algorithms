@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Checkers.Core
 {
-    public class StandartPathGenerator
+    public class StandartPathGenerator : IPathGenerator
     {
 
         public List<List<Cell>> GetPossibleMovements(CellState[,] field, Cell currentCell)

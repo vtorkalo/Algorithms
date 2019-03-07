@@ -172,7 +172,7 @@ namespace Checkers
                 }
                 if (state == CellState.WhiteKing || state == CellState.BlackKing)
                 {
-                    _movements = _kingPathGenerator.GetPossibleKingMovements(_field, _selectedCell);
+                    _movements = _kingPathGenerator.GetPossibleMovements(_field, _selectedCell);
                 }
                 _currentPathIndex = 0;
                 pnlField.Refresh();
