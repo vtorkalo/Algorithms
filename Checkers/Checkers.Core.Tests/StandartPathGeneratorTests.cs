@@ -45,5 +45,15 @@ namespace Checkers.Core.Tests
 
             Assert.IsTrue(actual.SequenceEqual(expected, _pathComparer));
         }
+
+        [TestMethod]
+        public void GetPossibleMovements_Case4()
+        {
+            var field = TestFieldData.Standart_Moves_Case4();
+            var actual = _target.GetPossibleMovements(field, new Cell(4, 3));
+            var expected = new List<List<Cell>> { new List<Cell> { new Cell(3, 4), new Cell(2, 5) } };
+
+            Assert.IsTrue(actual.SequenceEqual(expected, _pathComparer));
+        }
     }
 }

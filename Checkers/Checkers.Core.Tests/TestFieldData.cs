@@ -127,6 +127,16 @@ namespace Checkers.Core.Tests
             return result;
         }
 
+        public static CellState[,] Standart_Moves_Case4()
+        {
+            var result = Helpers.GetEmptyField();
+            result[3, 4] = CellState.White;
+            result[4, 3] = CellState.Black;
+            //selectedCell 4 3
+
+            return result;
+        }
+
         public static CellState[,] Standart_Moves_Case()
         {
             var result = Helpers.GetEmptyField();
