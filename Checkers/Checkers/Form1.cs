@@ -1,4 +1,5 @@
 ﻿using Checkers.Core;
+using Checkers.Core.Tests;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,14 +19,16 @@ namespace Checkers
             InitializeComponent();
         }
         const int cellSize = 60;
+        private StandartPathGenerator _standartPathGenerator = new StandartPathGenerator();
+        private KingPathGenerator _kingPathGenerator = new KingPathGenerator();
 
         private void button1_Click(object sender, EventArgs e)
         {
-            _field = Algorithms.GetInitialField();
+            _field = TestFieldData.King_Moves_Case1();
             pnlField.Refresh();
         }
 
-        private CellState[,] _field = Algorithms.GetInitialField();
+        private CellState[,] _field = Helpers.GetInitialField();
         private Cell _selectedCell = null;
         private List<List<Cell>> _movements = new List<List<Cell>>();
         private List<Cell> _currentPath = new List<Cell>();
@@ -116,15 +119,12 @@ namespace Checkers
         private void pnlField_MouseClick(object sender, MouseEventArgs e)
         {
             var cell = new Cell
-            {
-                Row = (byte)(e.Y / cellSize),
-                Col = (byte)(e.X / cellSize)
-            };
-            if (_field[cell.Row, cell.Col] != CellState.Empty)
-            {
-                _selectedCell = cell;
-                pnlField.Refresh();
-            }
+            (
+                e.Y / cellSize,
+                e.X / cellSize
+            );
+            _selectedCell = cell;
+            pnlField.Refresh();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -165,14 +165,14 @@ namespace Checkers
         {
             if (_selectedCell!= null)
             {
-                var state = Algorithms.GetCellState(_field, _selectedCell);
+                var state = Helpers.GetCellState(_field, _selectedCell);
                 if (state == CellState.White || state == CellState.Black)
                 {
-                    _movements = Algorithms.GetPossibleMovements(_field, _selectedCell);
+                    _movements = _standartPathGenerator.GetPossibleMovements(_field, _selectedCell);
                 }
                 if (state == CellState.WhiteKing || state == CellState.BlackKing)
                 {
-                    _movements = Algorithms.GetPossibleKingMovements(_field, _selectedCell);
+                    _movements = _kingPathGenerator.GetPossibleKingMovements(_field, _selectedCell);
                 }
                 _currentPathIndex = 0;
                 pnlField.Refresh();

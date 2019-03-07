@@ -6,10 +6,19 @@ namespace Checkers.Core
 {
     public class Cell
     {
-        public int Row { get; set; }
-        public int Col { get; set; }
+        public int Row { get; private set; }
+        public int Col { get; private set; }
         public bool Kill { get; set; }
-        public bool IsBack { get; set; }
+        public bool IsBack { get; private set; }
+
+        public Cell() { }
+        public Cell(int row, int col, bool isBack = false, bool kill = false)
+        {
+            this.Row = row;
+            this.Col = col;
+            this.IsBack = isBack;
+            this.Kill = kill;
+        }
 
         public override string ToString()
         {

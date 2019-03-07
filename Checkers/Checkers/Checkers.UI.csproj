@@ -80,6 +80,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Checkers.Core.Tests\Checkers.Core.Tests.csproj">
+      <Project>{80dc7eb9-42bd-4948-ad4b-82b766cf8d72}</Project>
+      <Name>Checkers.Core.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Checkers.Core\Checkers.Core.csproj">
       <Project>{2a0639cf-118e-4504-a62b-4cc71bc8f03b}</Project>
       <Name>Checkers.Core</Name>
