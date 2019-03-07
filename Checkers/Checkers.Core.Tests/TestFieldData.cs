@@ -91,5 +91,63 @@ namespace Checkers.Core.Tests
 
             return result;
         }
+
+
+        public static CellState[,] Standart_Moves_Case1()
+        {
+            var result = Helpers.GetEmptyField();
+            result[0, 7] = CellState.Black;
+
+            result[1, 4] = CellState.Black;
+
+            result[1, 6] = CellState.Black;
+
+            result[3, 0] = CellState.Black;
+
+            result[3, 4] = CellState.Black;
+
+            result[3, 6] = CellState.Black;
+
+            result[5, 2] = CellState.Black;
+
+            result[5, 4] = CellState.Black;
+
+            result[5, 6] = CellState.Black;
+
+            result[6, 3] = CellState.White;
+
+            result[7, 6] = CellState.White;
+
+            //selectedCell 6 3
+
+            return result;
+        }
+
+
+        public static CellState[,] Standart_Moves_Case2()
+        {
+            var result = Helpers.GetEmptyField();
+            result[7, 2] = CellState.Black;
+            //selectedCell 7 2
+
+            return result;
+        }
+
+        public static CellState[,] Standart_Moves_Case3()
+        {
+            var result = Helpers.GetEmptyField();
+            result[5, 4] = CellState.White;
+
+            //selectedCell 5 4
+
+            return result;
+        }
+
+        public static CellState[,] Standart_Moves_Case()
+        {
+            var result = Helpers.GetEmptyField();
+
+            return result;
+        }
     }
 }
