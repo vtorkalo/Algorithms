@@ -17,6 +17,7 @@ namespace Checkers
         {
             InitializeComponent();
         }
+        const int cellSize = 60;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -32,10 +33,9 @@ namespace Checkers
 
         private void pnlField_Paint(object sender, PaintEventArgs e)
         {
-            pnlField.Width = 800;
-            pnlField.Height = 800;
+            pnlField.Width = cellSize * 8;
+            pnlField.Height = cellSize * 8;
 
-            float cellSize = pnlField.Size.Height / 8;
             int width = pnlField.Width;
             int height = pnlField.Height;
 
@@ -70,7 +70,10 @@ namespace Checkers
 
                         if (state == CellState.BlackKing || state == CellState.WhiteKing)
                         {
-                            e.Graphics.DrawString("K", new Font("arial", 30), Brushes.Black, x * cellSize + 30, y * cellSize + 30);
+                            e.Graphics.DrawString("K", new Font("arial", cellSize * 0.2f), 
+                                Brushes.Black,
+                                x * cellSize + cellSize * 0.4f,
+                                y * cellSize + cellSize * 0.4f);
                         }
                         
                     }
@@ -87,10 +90,17 @@ namespace Checkers
             foreach (var cell in _currentPath)
                 {
                     var p = new Pen(Brushes.Red, lineWidth);
-                    e.Graphics.DrawRectangle(p, cell.Col * cellSize, cell.Row * cellSize, cellSize - lineWidth, cellSize - lineWidth);
-                    e.Graphics.DrawString(_currentPath.IndexOf(cell).ToString(), new Font(FontFamily.GenericSerif, 15),
+                    e.Graphics.DrawRectangle(p, cell.Col * cellSize, 
+                        cell.Row * cellSize,
+                        cellSize - lineWidth,
+                        cellSize - lineWidth);
+
+                    e.Graphics.DrawString(_currentPath.IndexOf(cell).ToString(),
+                        new Font(FontFamily.GenericSerif, cellSize * 0.2f),
                         Brushes.Black, cell.Col * cellSize, cell.Row * cellSize);
-                e.Graphics.DrawString(cell.ToString(), new Font(FontFamily.GenericSerif, 15),
+
+                e.Graphics.DrawString(cell.ToString(),
+                    new Font(FontFamily.GenericSerif, cellSize * 0.2f),
                         Brushes.Black, cell.Col * cellSize, cell.Row * cellSize+25);
             }
         }
@@ -150,10 +160,16 @@ namespace Checkers
         {
             if (_selectedCell!= null)
             {
-                //_movements = Algorithms.GetPossibleMovements(_field, _selectedCell);
-                _movements = Algorithms.GetPossibleKingMovements(_field, _selectedCell);
+                var state = Algorithms.GetCellState(_field, _selectedCell);
+                if (state == CellState.White || state == CellState.Black)
+                {
+                    _movements = Algorithms.GetPossibleMovements(_field, _selectedCell);
+                }
+                if (state == CellState.WhiteKing || state == CellState.BlackKing)
+                {
+                    _movements = Algorithms.GetPossibleKingMovements(_field, _selectedCell);
+                }
                 _currentPathIndex = 0;
-                //_movements =Algorithms.GetKingNeightbords(_field, CellState.WhiteKing, _selectedCell);
                 pnlField.Refresh();
             }
         }

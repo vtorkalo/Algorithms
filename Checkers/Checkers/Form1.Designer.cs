@@ -44,7 +44,7 @@
             // 
             this.pnlField.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pnlField.Location = new System.Drawing.Point(55, 31);
-            this.pnlField.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlField.Margin = new System.Windows.Forms.Padding(2);
             this.pnlField.Name = "pnlField";
             this.pnlField.Size = new System.Drawing.Size(534, 521);
             this.pnlField.TabIndex = 0;
@@ -53,8 +53,8 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(1069, 11);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button1.Location = new System.Drawing.Point(729, 52);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(67, 29);
             this.button1.TabIndex = 1;
@@ -64,8 +64,8 @@
             // 
             // btnSetBlack
             // 
-            this.btnSetBlack.Location = new System.Drawing.Point(1069, 123);
-            this.btnSetBlack.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSetBlack.Location = new System.Drawing.Point(729, 164);
+            this.btnSetBlack.Margin = new System.Windows.Forms.Padding(2);
             this.btnSetBlack.Name = "btnSetBlack";
             this.btnSetBlack.Size = new System.Drawing.Size(100, 29);
             this.btnSetBlack.TabIndex = 2;
@@ -75,8 +75,8 @@
             // 
             // btnSetBlackKing
             // 
-            this.btnSetBlackKing.Location = new System.Drawing.Point(1069, 156);
-            this.btnSetBlackKing.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSetBlackKing.Location = new System.Drawing.Point(729, 197);
+            this.btnSetBlackKing.Margin = new System.Windows.Forms.Padding(2);
             this.btnSetBlackKing.Name = "btnSetBlackKing";
             this.btnSetBlackKing.Size = new System.Drawing.Size(100, 26);
             this.btnSetBlackKing.TabIndex = 3;
@@ -86,8 +86,8 @@
             // 
             // btnSetWhite
             // 
-            this.btnSetWhite.Location = new System.Drawing.Point(1069, 187);
-            this.btnSetWhite.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSetWhite.Location = new System.Drawing.Point(729, 228);
+            this.btnSetWhite.Margin = new System.Windows.Forms.Padding(2);
             this.btnSetWhite.Name = "btnSetWhite";
             this.btnSetWhite.Size = new System.Drawing.Size(100, 25);
             this.btnSetWhite.TabIndex = 4;
@@ -97,8 +97,8 @@
             // 
             // btnSetWhiteKing
             // 
-            this.btnSetWhiteKing.Location = new System.Drawing.Point(1069, 216);
-            this.btnSetWhiteKing.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSetWhiteKing.Location = new System.Drawing.Point(729, 257);
+            this.btnSetWhiteKing.Margin = new System.Windows.Forms.Padding(2);
             this.btnSetWhiteKing.Name = "btnSetWhiteKing";
             this.btnSetWhiteKing.Size = new System.Drawing.Size(100, 24);
             this.btnSetWhiteKing.TabIndex = 5;
@@ -108,8 +108,8 @@
             // 
             // btnSetEmpty
             // 
-            this.btnSetEmpty.Location = new System.Drawing.Point(1069, 95);
-            this.btnSetEmpty.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSetEmpty.Location = new System.Drawing.Point(729, 136);
+            this.btnSetEmpty.Margin = new System.Windows.Forms.Padding(2);
             this.btnSetEmpty.Name = "btnSetEmpty";
             this.btnSetEmpty.Size = new System.Drawing.Size(100, 24);
             this.btnSetEmpty.TabIndex = 6;
@@ -119,8 +119,8 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(1077, 312);
-            this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button2.Location = new System.Drawing.Point(737, 353);
+            this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(93, 29);
             this.button2.TabIndex = 7;
@@ -130,7 +130,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(1069, 44);
+            this.button3.Location = new System.Drawing.Point(729, 85);
             this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(67, 29);
@@ -141,7 +141,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(1069, 361);
+            this.button4.Location = new System.Drawing.Point(729, 402);
             this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(93, 29);
@@ -154,7 +154,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1197, 688);
+            this.ClientSize = new System.Drawing.Size(878, 618);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -165,7 +165,7 @@
             this.Controls.Add(this.btnSetBlack);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pnlField);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
