@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Checkers.Core
 {
@@ -223,7 +222,6 @@ namespace Checkers.Core
                             {
                                 var forceTurns = cellNeightbords.Where(n => !n.Intersect(newPath, _comparer).Any());
 
-                                
                                 if (forceTurns.Any())
                                 {
                                     foreach (var turn in forceTurns)
@@ -295,7 +293,6 @@ namespace Checkers.Core
             return inRange;
         }
 
-
         private static void GetPossibleMovementsRecursive(List<List<Cell>> paths, List<Cell> currentPath, CellState[,] field, Cell startCell, Cell currentCell)
         {
             var startCellState = GetCellState(field, startCell);
@@ -306,7 +303,9 @@ namespace Checkers.Core
 
             foreach (var neightbor in neightbords)
             {
-                if (GetCellState(field, neightbor) == CellState.Empty && !neightbor.IsBack && !currentPath.Any()) //first movement in path to empty cell
+                if (IsFree(field, startCell, neightbor)
+                   && !neightbor.IsBack
+                   && !currentPath.Any()) //first movement in path to empty cell
                 {
                     emptyCells.Add(neightbor);
                 }
@@ -326,7 +325,8 @@ namespace Checkers.Core
             foreach (var nextCell in FilterInRange(possibleEnemies))
             {
                 var nextCellState = GetCellState(field, nextCell);
-                if (IsEnemy(startCellState, nextCellState) && CanKill(field, currentCell, nextCell))
+                if (IsEnemy(startCellState, nextCellState)
+                     && CanKill(field, currentCell, nextCell, startCell))
                 {
                     var killCell = new Cell
                     {
@@ -356,8 +356,8 @@ namespace Checkers.Core
             var result = new List<List<Cell>>();
             result.Add(GetKingNeightbords(field, startCell, startCellState, currentCell, GetRightTopNextCell));
             result.Add(GetKingNeightbords(field, startCell, startCellState, currentCell, GetRigthBottomNextCell));
-            result.Add(GetKingNeightbords(field, startCell, startCellState, currentCell, GetLeftTopNextCell));
             result.Add(GetKingNeightbords(field, startCell, startCellState, currentCell, GetLeftBottomNextCell));
+            result.Add(GetKingNeightbords(field, startCell, startCellState, currentCell, GetLeftTopNextCell));
 
             return result;
         }
@@ -371,7 +371,9 @@ namespace Checkers.Core
             while (IsInRange(newCell))
             {
                 var newCellState = GetCellState(field, newCell);
-                if (newCellState != CellState.Empty && !IsEnemy(startCellState, newCellState) && !CompareCells(newCell, startCell))
+                if (newCellState != CellState.Empty
+                    && !IsEnemy(startCellState, newCellState)
+                    && !CompareCells(newCell, startCell))
                 {
                     break;
                 }
@@ -438,94 +440,132 @@ namespace Checkers.Core
 
         private static List<Cell> GetNeightbords(Cell currentCell, CellState currentCellState)
         {
-            var result = new List<Cell>();
-
-            if (currentCellState == CellState.White)
+            List<Cell> result;
+            switch (currentCellState)
             {
-                result.Add(new Cell
-                {
-                    Row = currentCell.Row - 1,
-                    Col = currentCell.Col - 1
-                });
-
-                result.Add(new Cell
-                {
-                    Row = currentCell.Row - 1,
-                    Col = currentCell.Col + 1
-                });
-
-                result.Add(new Cell
-                {
-                    Row = currentCell.Row + 1,
-                    Col = currentCell.Col - 1,
-                    IsBack = true
-                });
-
-                result.Add(new Cell
-                {
-                    Row = currentCell.Row + 1,
-                    Col = currentCell.Col + 1,
-                    IsBack = true
-                });
+                case CellState.White:
+                    result = GetWhiteMoves(currentCell);
+                    break;
+                case CellState.Black:
+                    result = GetBlackMoves(currentCell);
+                    break;
+                default:
+                    throw new NotSupportedException();
             }
 
-            if (currentCellState == CellState.Black)
-            {
-                result.Add(new Cell
-                {
-                    Row = currentCell.Row + 1,
-                    Col = currentCell.Col - 1
-                });
+            var filteredResult = FilterInRange(result);
 
-                result.Add(new Cell
-                {
-                    Row = currentCell.Row + 1,
-                    Col = currentCell.Col + 1
-                });
-                result.Add(new Cell
-                {
-                    Row = currentCell.Row - 1,
-                    Col = currentCell.Col - 1,
-                    IsBack = true
-                });
-
-                result.Add(new Cell
-                {
-                    Row = currentCell.Row - 1,
-                    Col = currentCell.Col + 1,
-                    IsBack = true
-                });
-            }
-
-            return FilterInRange(result);
+            return filteredResult;
         }
 
-        private static bool CanKill(CellState[,] field, Cell currentCell, Cell enemyCell)
+        private static List<Cell> GetBlackMoves(Cell currentCell)
         {
-            bool canKill = false;
-
-            Cell targetCell = GetCellAfterKill(currentCell, enemyCell);
-            if (IsInRange(targetCell) && GetCellState(field, targetCell) == CellState.Empty)
+            var result = new List<Cell>
             {
-                canKill = true;
-            }
+                new Cell
+                {
+                    Row = currentCell.Row + 1,
+                    Col = currentCell.Col - 1
+                },
+                new Cell
+                {
+                    Row = currentCell.Row + 1,
+                    Col = currentCell.Col + 1
+                },
+                new Cell
+                {
+                    Row = currentCell.Row - 1,
+                    Col = currentCell.Col - 1,
+                    IsBack = true
+                },
+                new Cell
+                {
+                    Row = currentCell.Row - 1,
+                    Col = currentCell.Col + 1,
+                    IsBack = true
+                }
+            };
+
+            return result;
+        }
+
+        private static List<Cell> GetWhiteMoves(Cell currentCell)
+        {
+            var result = new List<Cell>
+            {
+                new Cell
+                {
+                    Row = currentCell.Row - 1,
+                    Col = currentCell.Col - 1
+                },
+                new Cell
+                {
+                    Row = currentCell.Row - 1,
+                    Col = currentCell.Col + 1
+                },
+                new Cell
+                {
+                    Row = currentCell.Row + 1,
+                    Col = currentCell.Col - 1,
+                    IsBack = true
+                },
+                new Cell
+                {
+                    Row = currentCell.Row + 1,
+                    Col = currentCell.Col + 1,
+                    IsBack = true
+                }
+            };
+
+            return result;
+        }
+
+        private static bool CanKill(CellState[,] field, Cell currentCell, Cell enemyCell, Cell startCell)
+        {
+            Cell targetCell = GetCellAfterKill(currentCell, enemyCell);
+            bool canKill = IsInRange(targetCell)
+                        && IsFree(field, startCell, targetCell);
 
             return canKill;
         }
 
+        private static bool IsFree(CellState[,] field, Cell startCell, Cell targetCell)
+        {
+            return GetCellState(field, targetCell) == CellState.Empty || CompareCells(targetCell, startCell);
+        }
+
         private static Cell GetCellAfterKill(Cell currentCell, Cell enemyCell)
         {
-            return new Cell
+            var cellAfterKill = new Cell
             {
                 Row = enemyCell.Row + (enemyCell.Row - currentCell.Row),
                 Col = enemyCell.Col + (enemyCell.Col - currentCell.Col),
             };
+
+            return cellAfterKill;
         }
 
-        private static bool IsEnemy(CellState currentState, CellState state)
+        private static bool IsWhite(CellState state)
         {
-            bool result = ((currentState == CellState.White || currentState == CellState.WhiteKing) && (state == CellState.Black || state == CellState.BlackKing)
-                || (currentState == CellState.Black || currentState == CellState.BlackKing) && (state == CellState.White || state == CellState.WhiteKing));
+            bool isWhite = state == CellState.White
+                        || state == CellState.WhiteKing;
+
+            return isWhite;
+        }
+
+        private static bool IsBlack(CellState state)
+        {
+            bool isWhite = state == CellState.Black
+                        || state == CellState.BlackKing;
+
+            return isWhite;
+        }
+
+        private static bool IsEnemy(CellState currentState, CellState otherState)
+        {
+            bool result = (IsWhite(currentState) && IsBlack(otherState))
+                       || (IsBlack(currentState) && IsWhite(otherState));
+
             return result;
         }
     }

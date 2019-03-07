@@ -72,31 +72,38 @@ namespace Checkers
                         {
                             e.Graphics.DrawString("K", new Font("arial", cellSize * 0.2f), 
                                 Brushes.Black,
-                                x * cellSize + cellSize * 0.4f,
-                                y * cellSize + cellSize * 0.4f);
+                                x * cellSize + cellSize * 0.35f,
+                                y * cellSize + cellSize * 0.35f);
                         }
                         
                     }
+
+                    if (y % 2 != x % 2)
+                    { 
+                        e.Graphics.DrawString(string.Format("{0} {1}", y, x),
+                             new Font(FontFamily.GenericSerif, cellSize * 0.15f),
+                             Brushes.DarkGray,
+                             x * cellSize,
+                             y * cellSize+cellSize*0.7f);
+                    }
                 }
             }
-
 
             var lineWidth = 3;
             foreach (var cell in _currentPath)
                 {
                     var p = new Pen(Brushes.Red, lineWidth);
-                    e.Graphics.DrawRectangle(p, cell.Col * cellSize, 
+                    e.Graphics.DrawRectangle(p,
+                        cell.Col * cellSize, 
                         cell.Row * cellSize,
                         cellSize - lineWidth,
                         cellSize - lineWidth);
 
                     e.Graphics.DrawString(_currentPath.IndexOf(cell).ToString(),
                         new Font(FontFamily.GenericSerif, cellSize * 0.2f),
-                        Brushes.Black, cell.Col * cellSize, cell.Row * cellSize);
-
-                e.Graphics.DrawString(cell.ToString(),
-                    new Font(FontFamily.GenericSerif, cellSize * 0.2f),
-                        Brushes.Black, cell.Col * cellSize, cell.Row * cellSize+25);
+                        Brushes.Black,
+                        cell.Col * cellSize,
+                        cell.Row * cellSize);                
             }
 
             if (_selectedCell != null)
@@ -106,17 +113,14 @@ namespace Checkers
             }
         }
 
-        
-
         private void pnlField_MouseClick(object sender, MouseEventArgs e)
         {
-            float cellSize = pnlField.Size.Height / 8;
             var cell = new Cell
             {
                 Row = (byte)(e.Y / cellSize),
                 Col = (byte)(e.X / cellSize)
             };
-            //if (_field[cell.Row, cell.Col] != CellState.Empty)
+            if (_field[cell.Row, cell.Col] != CellState.Empty)
             {
                 _selectedCell = cell;
                 pnlField.Refresh();
