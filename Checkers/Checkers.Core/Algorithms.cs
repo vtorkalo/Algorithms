@@ -130,68 +130,73 @@ namespace Checkers.Core
             if (paths.Any(p => p.Any(x => x.Kill))) //Any kill possible - remove no paths without kill
             {
                 paths = paths.Where(p => p.Any(x => x.Kill)).ToList();
-
-
-
-                var trimmedResult = new List<List<Cell>>();
-                foreach (var path in paths)
-                {
-                    trimmedResult.Add(TrimmPath(path));
-                }
-                paths = trimmedResult.OrderByDescending(p => p.Count).ToList();
-
-
-                var result = new List<List<Cell>>();
-                foreach (var path in paths)
-                {
-                    if (!result.Any(r => r.Take(path.Count).SequenceEqual(path, _comparer)))
-                    {
-                        result.Add(path);
-                    }
-                }
-                paths = result;
-
-
-
-
-                var startCellState = GetCellState(field, startCell);
-                var expandedPaths = new List<List<Cell>>();
-                foreach (var path in paths)
-                {
-                    if (path.Any(x => x.Kill))
-                    {
-                        path.Insert(0, startCell);
-                        var beforeLast = path.Skip(path.Count - 2).Take(1).Single();
-                        var lastCell = path.Last();
-                        int horDir = lastCell.Col - beforeLast.Col;
-                        int vertDir = lastCell.Row - beforeLast.Row;
-
-
-                        var neigthboards = GetKingNeightbords(field, startCell, startCellState, path.Last(),
-                            (c, distance) =>
-                            {
-                                return new Cell
-                                {
-                                    Row = lastCell.Row + distance * vertDir,
-                                    Col = lastCell.Col + distance * horDir
-                                };
-                            });
-
-                        expandedPaths.Add(path);
-                        expandedPaths.Last().Add(neigthboards.First());
-                        foreach (var n in neigthboards.Skip(1))
-                        {
-                            var expandedPath = new List<Cell>();
-                            expandedPath.AddRange(expandedPaths.Last());
-                            expandedPath.Add(n);
-                            expandedPaths.Add(expandedPath);
-                        }
-                    }
-                }
-                paths = expandedPaths;
+                paths = TrimmPaths(paths);
+                paths = ExpandPaths(field, startCell, paths);
             }
 
             return paths.OrderByDescending(p => p.Count(x => x.Kill)).ToList();
+        }
+
+        private static List<List<Cell>> ExpandPaths(CellState[,] field, Cell startCell, List<List<Cell>> paths)
+        {
+            var startCellState = GetCellState(field, startCell);
+            var expandedPaths = new List<List<Cell>>();
+            foreach (var path in paths)
+            {
+                if (path.Any(x => x.Kill))
+                {
+                    path.Insert(0, startCell);
+                    var beforeLast = path.Skip(path.Count - 2).Take(1).Single();
+                    var lastCell = path.Last();
+                    int horDir = lastCell.Col - beforeLast.Col;
+                    int vertDir = lastCell.Row - beforeLast.Row;
+
+
+                    var neigthboards = GetKingNeightbords(field, startCell, startCellState, path.Last(),
+                        (c, distance) =>
+                        {
+                            return new Cell
+                            {
+                                Row = lastCell.Row + distance * vertDir,
+                                Col = lastCell.Col + distance * horDir
+                            };
+                        });
+
+                    expandedPaths.Add(path);
+                    expandedPaths.Last().Add(neigthboards.First());
+                    foreach (var n in neigthboards.Skip(1))
+                    {
+                        var expandedPath = new List<Cell>();
+                        expandedPath.AddRange(expandedPaths.Last());
+                        expandedPath.Add(n);
+                        expandedPaths.Add(expandedPath);
+                    }
+                }
+            }
+
+            return expandedPaths;
+        }
+
+        private static List<List<Cell>> TrimmPaths(List<List<Cell>> paths)
+        {
+            var trimmedResult = new List<List<Cell>>();
+            foreach (var path in paths)
+            {
+                trimmedResult.Add(TrimmPath(path));
+            }
+            trimmedResult = trimmedResult.OrderByDescending(p => p.Count).ToList();
+
+
+            var result = new List<List<Cell>>();
+            foreach (var path in trimmedResult)
+            {
+                if (!result.Any(r => r.Take(path.Count).SequenceEqual(path, _comparer)))
+                {
+                    result.Add(path);
+                }
+            }
+
+            return result;
         }
 
         private static void GetPossibleKingMovementsRecursive(List<List<Cell>> paths, List<Cell> currentPath, CellState[,] field, Cell startCell, Cell currentCell)
@@ -216,21 +221,26 @@ namespace Checkers.Core
                             if (lastKill != null)
                             {
                                 var forceTurns = cellNeightbords.Where(n => !n.Intersect(newPath, _comparer).Any());
+
+                                
                                 if (forceTurns.Any())
                                 {
-                                    var firstTurn = forceTurns.First();
-                                    firstTurn.Insert(0, cell);
-                                    var firstKillInTurn = firstTurn.First(x => x.Kill);
-
-                                    var cellBeforeKull = firstTurn[firstTurn.IndexOf(firstKillInTurn) - 1];
-                                    var cellAfterKill = GetCellAfterKill(cellBeforeKull, firstKillInTurn);
-                                    if (IsInRange(cellAfterKill))
+                                    foreach (var turn in forceTurns)
                                     {
+                                        var turnPath = new List<Cell>();
+                                        turnPath.AddRange(newPath);
+                                        turn.Insert(0, cell);
+                                        var firstKillInTurn = turn.First(x => x.Kill);
+                                        var cellBeforeKull = turn[turn.IndexOf(firstKillInTurn) - 1];
+                                        var cellAfterKill = GetCellAfterKill(cellBeforeKull, firstKillInTurn);
+                                        if (IsInRange(cellAfterKill))
+                                        {
 
-                                        newPath.AddRange(firstTurn.Take(firstTurn.IndexOf(firstKillInTurn) + 2));
-                                        GetPossibleKingMovementsRecursive(paths, newPath.ToList(), field, startCell, cellAfterKill);
-                                        break;
+                                            turnPath.AddRange(turn.Take(turn.IndexOf(firstKillInTurn) + 2));
+                                            GetPossibleKingMovementsRecursive(paths, turnPath.ToList(), field, startCell, cellAfterKill);
+                                        }
                                     }
+                                    break;
                                 }
                                 else
                                 {
@@ -253,7 +263,6 @@ namespace Checkers.Core
                 {
                     paths.Add(newPath.ToList());
                 }
-
             }
 
             if (currentPath.Any())
