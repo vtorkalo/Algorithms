@@ -58,8 +58,8 @@ namespace Checkers.Core
                                     turnNewPath.AddRange(newPath);
                                     turn.Insert(0, cell);
                                     var firstKillInTurn = turn.First(x => x.Kill);
-                                    var cellBeforeKull = turn[turn.IndexOf(firstKillInTurn) - 1];
-                                    var cellAfterKill = Helpers.GetCellAfterKill(cellBeforeKull, firstKillInTurn);
+                                    var cellBeforeKill = turn[turn.IndexOf(firstKillInTurn) - 1];
+                                    var cellAfterKill = Helpers.GetCellAfterKill(cellBeforeKill, firstKillInTurn);
                                     if (Helpers.IsInRange(cellAfterKill))
                                     {
                                         turnNewPath.AddRange(turn.Take(turn.IndexOf(firstKillInTurn) + 2));

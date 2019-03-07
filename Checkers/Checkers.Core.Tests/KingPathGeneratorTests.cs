@@ -57,5 +57,25 @@ namespace Checkers.Core.Tests
 
             Assert.IsTrue(actual.SequenceEqual(expected, _pathComparer));
         }
+
+        [TestMethod]
+        public void GetPossibleKingMovements_Case5()
+        {
+            var field = TestFieldData.King_Moves_Case5();
+            var actual = _target.GetPossibleKingMovements(field, new Cell(4, 3));
+            var expected = new List<List<Cell>> { new List<Cell> { new Cell(4, 3), new Cell(3, 4) }, new List<Cell> { new Cell(4, 3), new Cell(3, 4), new Cell(2, 5) }, new List<Cell> { new Cell(4, 3), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6) }, new List<Cell> { new Cell(4, 3), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6), new Cell(0, 7) }, new List<Cell> { new Cell(4, 3), new Cell(5, 4) }, new List<Cell> { new Cell(4, 3), new Cell(5, 4), new Cell(6, 5) }, new List<Cell> { new Cell(4, 3), new Cell(5, 4), new Cell(6, 5), new Cell(7, 6) }, new List<Cell> { new Cell(4, 3), new Cell(5, 2) }, new List<Cell> { new Cell(4, 3), new Cell(5, 2), new Cell(6, 1) }, new List<Cell> { new Cell(4, 3), new Cell(5, 2), new Cell(6, 1), new Cell(7, 0) }, new List<Cell> { new Cell(4, 3), new Cell(3, 2) }, new List<Cell> { new Cell(4, 3), new Cell(3, 2), new Cell(2, 1) }, new List<Cell> { new Cell(4, 3), new Cell(3, 2), new Cell(2, 1), new Cell(1, 0) } };
+
+            Assert.IsTrue(actual.SequenceEqual(expected, _pathComparer));
+        }
+
+        [TestMethod]
+        public void GetPossibleKingMovements_Case6()
+        {
+            var field = TestFieldData.King_Moves_Case6();
+            var actual = _target.GetPossibleKingMovements(field, new Cell(3, 4));
+            var expected = new List<List<Cell>> { new List<Cell> { new Cell(3, 4), new Cell(4, 5), new Cell(5, 6) }, new List<Cell> { new Cell(3, 4), new Cell(2, 3), new Cell(1, 2) }, new List<Cell> { new Cell(3, 4), new Cell(2, 3), new Cell(1, 2), new Cell(0, 1) } };
+
+            Assert.IsTrue(actual.SequenceEqual(expected, _pathComparer));
+        }
     }
 }

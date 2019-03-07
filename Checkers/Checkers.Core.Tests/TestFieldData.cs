@@ -60,9 +60,34 @@ namespace Checkers.Core.Tests
             return result;
         }
 
-        public static CellState[,] Case5()
+
+        public static CellState[,] King_Moves_Case5()
         {
             var result = Helpers.GetEmptyField();
+            result[4, 3] = CellState.WhiteKing;
+            //selectedCell 4 3
+
+            return result;
+        }
+
+        public static CellState[,] King_Moves_Case6()
+        {
+            var result = Helpers.GetEmptyField();
+            result[1, 6] = CellState.Black;
+
+            result[2, 3] = CellState.White;
+
+            result[3, 4] = CellState.BlackKing;
+
+            result[4, 5] = CellState.White;
+
+            result[5, 2] = CellState.White;
+
+            result[6, 1] = CellState.Black;
+
+            result[6, 7] = CellState.White;
+
+            //selectedCell 3 4
 
             return result;
         }

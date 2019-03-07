@@ -46,6 +46,10 @@ namespace Checkers.Core
                         }
                         newCell.Kill = true;
                     }
+                    else
+                    {
+                        break;
+                    }
                 }
 
                 result.Add(newCell);

@@ -24,7 +24,7 @@ namespace Checkers
 
         private void button1_Click(object sender, EventArgs e)
         {
-            _field = TestFieldData.King_Moves_Case4();
+            _field = TestFieldData.King_Moves_Case6();
             pnlField.Refresh();
         }
 
@@ -219,7 +219,25 @@ namespace Checkers
                     builder.Append(",");
                 }
             }
-            builder.Append("}");
+            builder.Append("};");
+            MessageBox.Show(builder.ToString());
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            StringBuilder builder = new StringBuilder();
+            for (int row =0; row<8; row++)
+                for (int col = 0; col < 8; col++)
+                {
+                    if (_field[row, col] != CellState.Empty)
+                    {
+                        builder.AppendLine(string.Format("result[{0}, {1}] = CellState.{2};", row, col, _field[row, col].ToString()));
+                    }
+                }
+            if (_selectedCell != null)
+            {
+                builder.AppendLine(string.Format("selectedCell {0} {1}", _selectedCell.Row, _selectedCell.Col));
+            }
             MessageBox.Show(builder.ToString());
         }
     }
