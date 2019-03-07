@@ -119,12 +119,12 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(737, 353);
+            this.button2.Location = new System.Drawing.Point(729, 347);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(93, 29);
             this.button2.TabIndex = 7;
-            this.button2.Text = "button2";
+            this.button2.Text = "Calculate";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 

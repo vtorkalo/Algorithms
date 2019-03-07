@@ -80,13 +80,8 @@ namespace Checkers
                 }
             }
 
-            var lineWidth = 3;
-            if (_selectedCell != null)
-            {
-                var p = new Pen(Brushes.Green, lineWidth);
-                e.Graphics.DrawRectangle(p, _selectedCell.Col * cellSize, _selectedCell.Row * cellSize, cellSize- lineWidth, cellSize- lineWidth);
-            }
 
+            var lineWidth = 3;
             foreach (var cell in _currentPath)
                 {
                     var p = new Pen(Brushes.Red, lineWidth);
@@ -102,6 +97,12 @@ namespace Checkers
                 e.Graphics.DrawString(cell.ToString(),
                     new Font(FontFamily.GenericSerif, cellSize * 0.2f),
                         Brushes.Black, cell.Col * cellSize, cell.Row * cellSize+25);
+            }
+
+            if (_selectedCell != null)
+            {
+                var p = new Pen(Brushes.Green, lineWidth);
+                e.Graphics.DrawRectangle(p, _selectedCell.Col * cellSize, _selectedCell.Row * cellSize, cellSize - lineWidth, cellSize - lineWidth);
             }
         }
 
@@ -171,6 +172,7 @@ namespace Checkers
                 }
                 _currentPathIndex = 0;
                 pnlField.Refresh();
+                button4_Click(sender, e);
             }
         }
 
