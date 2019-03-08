@@ -187,6 +187,39 @@ namespace Checkers.Core.Tests
             return result;
         }
 
+        public static CellState[,] Standart_Moves_Case6()
+        {
+            var result = Helpers.GetEmptyField();
+            result[0, 1] = CellState.Black;
+            result[0, 3] = CellState.Black;
+            result[0, 5] = CellState.Black;
+            result[0, 7] = CellState.Black;
+            result[1, 0] = CellState.Black;
+            result[1, 2] = CellState.Black;
+            result[1, 4] = CellState.Black;
+            result[1, 6] = CellState.Black;
+            result[2, 1] = CellState.Black;
+            result[2, 3] = CellState.Black;
+            result[2, 5] = CellState.Black;
+            result[2, 7] = CellState.Black;
+            result[3, 2] = CellState.White;
+            result[3, 4] = CellState.White;
+            result[5, 0] = CellState.White;
+            result[5, 4] = CellState.White;
+            result[5, 6] = CellState.White;
+            result[6, 1] = CellState.White;
+            result[6, 5] = CellState.White;
+            result[6, 7] = CellState.White;
+            result[7, 0] = CellState.White;
+            result[7, 2] = CellState.White;
+            result[7, 4] = CellState.White;
+            result[7, 6] = CellState.White;
+            // selectedCell 2 3
+
+            return result;
+        }
+
+
         public static CellState[,] King_Moves_Case8()
         {
             var result = Helpers.GetEmptyField();

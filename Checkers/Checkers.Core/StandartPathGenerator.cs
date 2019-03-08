@@ -17,6 +17,10 @@ namespace Checkers.Core
             {
                 paths = paths.Where(p => p.Any(x => x.Kill)).ToList();
             }
+            foreach (var path in paths) // TODO: adding start cell to beginning of each path. TODO refactor
+            {
+                path.Insert(0, currentCell);
+            }
             return paths;
         }
         

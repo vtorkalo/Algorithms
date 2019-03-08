@@ -6,6 +6,26 @@ namespace Checkers.Core
 {
     public static class Helpers
     {
+        public static void SetCell(CellState[,] field, Cell cell, CellState cellState)
+        {
+            field[cell.Row, cell.Col] = cellState;
+        }
+
+        public static void MakeMove(CellState[,] field, List<Cell> path)
+        {
+            var startCell = path.First();
+            var endCell = path.Last();
+            var kills = path.Where(x => x.Kill);
+            foreach (var kill in kills)
+            {
+                SetCell(field, kill, CellState.Empty);
+            }
+
+            var startCellState = GetCellState(field, startCell);
+            SetCell(field, startCell, CellState.Empty);
+            SetCell(field, endCell, startCellState);
+        }
+
         public static Cell GetRigthBottomNextCell(Cell currentCell, int distance)
         {
             return new Cell

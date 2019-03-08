@@ -12,26 +12,27 @@ using System.Windows.Forms;
 
 namespace Checkers
 {
-    public partial class fmCheckersMain : Form
+    public partial class Form1 : Form
     {
-        public fmCheckersMain()
+        public Form1()
         {
             InitializeComponent();
         }
         const int cellSize = 60;
-        private PathGenerator _pathGenerator = new PathGenerator();
+        private StandartPathGenerator _standartPathGenerator = new StandartPathGenerator();
+        private KingPathGenerator _kingPathGenerator = new KingPathGenerator();
 
         private void button1_Click(object sender, EventArgs e)
         {
-            _field = Helpers.GetInitialField();
+            _field = TestFieldData.Standart_Moves_Case6();
             pnlField.Refresh();
         }
 
         private CellState[,] _field = Helpers.GetInitialField();
-        private Cell _startCell = null;
+        private Cell _selectedCell = null;
         private List<List<Cell>> _movements = new List<List<Cell>>();
+        private List<Cell> _currentPath = new List<Cell>();
         int _currentPathIndex = 0;
-        private CellComparer _cellComparer = new CellComparer();
 
         private void pnlField_Paint(object sender, PaintEventArgs e)
         {
@@ -40,69 +41,7 @@ namespace Checkers
 
             int width = pnlField.Width;
             int height = pnlField.Height;
-            RenderField(e);
 
-
-            //var lineWidth = 3;
-            //foreach (var cell in _currentPath)
-            //{
-            //    var p = new Pen(Brushes.Red, lineWidth);
-            //    e.Graphics.DrawRectangle(p,
-            //        cell.Col * cellSize,
-            //        cell.Row * cellSize,
-            //        cellSize - lineWidth,
-            //        cellSize - lineWidth);
-
-            //    var cellIndex = _currentPath.IndexOf(cell);
-            //    int yshift = 0;
-            //    if (_currentPath.Take(cellIndex).Contains(cell, new CellComparer()))
-            //    {
-            //        yshift = 15;
-            //    }
-
-            //    e.Graphics.DrawString(cellIndex.ToString(),
-            //        new Font(FontFamily.GenericSerif, cellSize * 0.2f),
-            //        Brushes.Black,
-            //        cell.Col * cellSize,
-            //        cell.Row * cellSize + yshift);
-            //}
-
-
-            var lineWidth = 3;
-
-            if (_startCell != null)
-            {
-                var possibleTargets = _movements.Select(m => m.Last());
-                foreach (var path in _movements)
-                {
-                    foreach (var cell in path)
-                    {
-                        var p = new Pen(Brushes.Red, lineWidth);
-                        e.Graphics.DrawRectangle(p,
-                            cell.Col * cellSize,
-                            cell.Row * cellSize,
-                            cellSize - lineWidth,
-                            cellSize - lineWidth);
-
-                        var cellIndex = path.IndexOf(cell);
-                        e.Graphics.DrawString(cellIndex.ToString(),
-                            new Font(FontFamily.GenericSerif, cellSize * 0.2f),
-                            Brushes.Black,
-                            cell.Col * cellSize,
-                            cell.Row * cellSize);
-                    }
-                }
-            }
-
-            if (_startCell != null)
-            {
-                var p = new Pen(Brushes.Green, lineWidth);
-                e.Graphics.DrawRectangle(p, _startCell.Col * cellSize, _startCell.Row * cellSize, cellSize - lineWidth, cellSize - lineWidth);
-            }
-        }
-
-        private void RenderField(PaintEventArgs e)
-        {
             for (int x = 0; x < 8; x++)
             {
                 for (int y = 0; y < 8; y++)
@@ -117,7 +56,7 @@ namespace Checkers
                     {
                         case CellState.White:
                         case CellState.WhiteKing:
-                            checkerColor = Brushes.White;
+                            checkerColor = Brushes.White;                            
                             break;
 
                         case CellState.Black:
@@ -127,30 +66,60 @@ namespace Checkers
 
                     }
 
-                    float checkerSize = (float)(cellSize * 0.7);
+                    float checkerSize =(float) (cellSize * 0.7);
                     if (state != CellState.Empty)
                     {
-                        e.Graphics.FillEllipse(checkerColor, x * cellSize + (cellSize - checkerSize) / 2, y * cellSize + (cellSize - checkerSize) / 2, checkerSize, checkerSize);
+                        e.Graphics.FillEllipse(checkerColor, x * cellSize + (cellSize - checkerSize)/2, y * cellSize + (cellSize - checkerSize) / 2, checkerSize, checkerSize);
 
                         if (state == CellState.BlackKing || state == CellState.WhiteKing)
                         {
-                            e.Graphics.DrawString("K", new Font("arial", cellSize * 0.2f),
+                            e.Graphics.DrawString("K", new Font("arial", cellSize * 0.2f), 
                                 Brushes.Black,
                                 x * cellSize + cellSize * 0.35f,
                                 y * cellSize + cellSize * 0.35f);
                         }
-
+                        
                     }
 
                     if (y % 2 != x % 2)
-                    {
+                    { 
                         e.Graphics.DrawString(string.Format("{0} {1}", y, x),
                              new Font(FontFamily.GenericSerif, cellSize * 0.15f),
                              Brushes.DarkGray,
                              x * cellSize,
-                             y * cellSize + cellSize * 0.7f);
+                             y * cellSize+cellSize*0.7f);
                     }
                 }
+            }
+
+            var lineWidth = 3;
+            foreach (var cell in _currentPath)
+                {
+                    var p = new Pen(Brushes.Red, lineWidth);
+                    e.Graphics.DrawRectangle(p,
+                        cell.Col * cellSize, 
+                        cell.Row * cellSize,
+                        cellSize - lineWidth,
+                        cellSize - lineWidth);
+
+                var cellIndex = _currentPath.IndexOf(cell);
+                int yshift = 0;
+                if (_currentPath.Take(cellIndex).Contains(cell, new CellComparer()))
+                {
+                    yshift = 15;
+                }
+
+                    e.Graphics.DrawString(cellIndex.ToString(),
+                        new Font(FontFamily.GenericSerif, cellSize * 0.2f),
+                        Brushes.Black,
+                        cell.Col * cellSize,
+                        cell.Row * cellSize + yshift);                
+            }
+
+            if (_selectedCell != null)
+            {
+                var p = new Pen(Brushes.Green, lineWidth);
+                e.Graphics.DrawRectangle(p, _selectedCell.Col * cellSize, _selectedCell.Row * cellSize, cellSize - lineWidth, cellSize - lineWidth);
             }
         }
 
@@ -161,35 +130,9 @@ namespace Checkers
                 e.Y / cellSize,
                 e.X / cellSize
             );
-            if (cell.Row % 2 != cell.Col % 2)
-            {
-
-                if (_startCell == null)
-                {
-                    _startCell = cell;
-                    _movements = _pathGenerator.GetPossibleMovements(_field, _startCell);
-                }
-                else
-                {
-                    if (_movements.Select(m => m.Last()).Contains(cell, _cellComparer))
-                    {
-                        _startCell = null;
-                        var path = _movements.Single(m => Helpers.CompareCells(m.Last(), cell)).ToList();
-                        Helpers.MakeMove(_field, path);
-                        _movements.Clear();
-                    }
-                    else
-                    { // clicked in not allowed place - refresh start cell
-                        _startCell = cell;
-                        _movements = _pathGenerator.GetPossibleMovements(_field, _startCell);
-                    }
-                }
-
-                pnlField.Refresh();
-            }
+            _selectedCell = cell;
+            pnlField.Refresh();
         }
-
-        
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -198,9 +141,9 @@ namespace Checkers
 
         private void SetSelectedCellState(CellState state)
         {
-            if (_startCell != null)
+            if (_selectedCell != null)
             {
-                _field[_startCell.Row, _startCell.Col] = state;
+                _field[_selectedCell.Row, _selectedCell.Col] = state;
                 pnlField.Refresh();
             }
         }
@@ -227,9 +170,17 @@ namespace Checkers
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            if (_startCell!= null)
+            if (_selectedCell!= null)
             {
-                _movements = _pathGenerator.GetPossibleMovements(_field, _startCell);
+                var state = Helpers.GetCellState(_field, _selectedCell);
+                if (state == CellState.White || state == CellState.Black)
+                {
+                    _movements = _standartPathGenerator.GetPossibleMovements(_field, _selectedCell);
+                }
+                if (state == CellState.WhiteKing || state == CellState.BlackKing)
+                {
+                    _movements = _kingPathGenerator.GetPossibleMovements(_field, _selectedCell);
+                }
                 _currentPathIndex = 0;
                 pnlField.Refresh();
                 button4_Click(sender, e);
@@ -244,7 +195,17 @@ namespace Checkers
 
         private void button4_Click(object sender, EventArgs e)
         {
-          
+            if (_movements.Any())
+            {
+                _currentPath = _movements[_currentPathIndex];
+                button4.Text = _movements.IndexOf(_currentPath).ToString();
+                _currentPathIndex++;
+                if (_currentPathIndex >= _movements.Count)
+                {
+                    _currentPathIndex = 0;
+                }
+                pnlField.Refresh();
+            }
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -284,9 +245,9 @@ namespace Checkers
                         builder.AppendLine(string.Format("result[{0}, {1}] = CellState.{2};", row, col, _field[row, col].ToString()));
                     }
                 }
-            if (_startCell != null)
+            if (_selectedCell != null)
             {
-                builder.AppendLine(string.Format("selectedCell {0} {1}", _startCell.Row, _startCell.Col));
+                builder.AppendLine(string.Format("selectedCell {0} {1}", _selectedCell.Row, _selectedCell.Col));
             }
             MessageBox.Show(builder.ToString());
         }

@@ -18,7 +18,8 @@ namespace Checkers.Core.Tests
             _target = new KingPathGenerator();
         }
 
-
+
+
 
 
         [TestMethod]
