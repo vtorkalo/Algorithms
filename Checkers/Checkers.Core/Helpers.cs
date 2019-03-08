@@ -24,6 +24,66 @@ namespace Checkers.Core
             var startCellState = GetCellState(field, startCell);
             SetCell(field, startCell, CellState.Empty);
             SetCell(field, endCell, startCellState);
+
+            var whiteCells = Helpers.GetCellsOfSide(field, Side.White);
+            foreach (var cell in whiteCells)
+            {
+                var state = GetCellState(field, cell);
+                if (state == CellState.White && cell.Row == 0)
+                {
+                    SetCell(field, cell, CellState.WhiteKing);
+                }
+            }
+
+            var blackCells = Helpers.GetCellsOfSide(field, Side.Black);
+            foreach (var cell in blackCells)
+            {
+                var state = GetCellState(field, cell);
+                if (state == CellState.Black && cell.Row == 7)
+                {
+                    SetCell(field, cell, CellState.BlackKing);
+                }
+            }
+        }
+
+        public static CellState[,] CopyField(CellState[,] field)
+        {
+            int rows = field.GetLength(0);
+            int cols = field.GetLength(0);
+            var result = new CellState[rows, cols];
+
+            for (int row = 0; row < rows; row++)
+                for (int col = 0; col < cols; col++)
+                {
+                    result[row, col] = field[row, col];
+                }
+
+            return result;
+        }
+
+        public static Side GetOppositeSide(Side side)
+        {
+            return side == Side.White ? Side.Black : Side.White;
+        }
+
+        public static List<Cell> GetCellsOfSide(CellState[,] field, Side side)
+        {
+            int rows = field.GetLength(0);
+            int cols = field.GetLength(0);
+            var result = new List<Cell>();
+
+            for (int row = 0; row < rows; row++)
+                for (int col = 0; col < cols; col++)
+                {
+                    CellState state = field[row, col];
+                    if ((side == Side.White && Helpers.IsWhite(state))
+                        ||(side == Side.Black && Helpers.IsBlack(state)))
+                    {
+                        result.Add(new Cell(row, col));
+                    }
+                }
+
+            return result;
         }
 
         public static Cell GetRigthBottomNextCell(Cell currentCell, int distance)

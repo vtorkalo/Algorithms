@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,6 +21,7 @@ namespace Checkers
         }
         const int cellSize = 60;
         private PathGenerator _pathGenerator = new PathGenerator();
+        private CheckersAlgorithm _checkersAlgorithm = new CheckersAlgorithm();
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -32,6 +34,8 @@ namespace Checkers
         private List<List<Cell>> _movements = new List<List<Cell>>();
         int _currentPathIndex = 0;
         private CellComparer _cellComparer = new CellComparer();
+
+        private List<Cell> _aiMove = null;
 
         private void pnlField_Paint(object sender, PaintEventArgs e)
         {
@@ -70,27 +74,18 @@ namespace Checkers
 
             var lineWidth = 3;
 
+
+            if (_aiMove != null)
+            {
+                RenderPath(e, lineWidth, _aiMove);
+            }
+
             if (_startCell != null)
             {
                 var possibleTargets = _movements.Select(m => m.Last());
                 foreach (var path in _movements)
                 {
-                    foreach (var cell in path)
-                    {
-                        var p = new Pen(Brushes.Red, lineWidth);
-                        e.Graphics.DrawRectangle(p,
-                            cell.Col * cellSize,
-                            cell.Row * cellSize,
-                            cellSize - lineWidth,
-                            cellSize - lineWidth);
-
-                        var cellIndex = path.IndexOf(cell);
-                        e.Graphics.DrawString(cellIndex.ToString(),
-                            new Font(FontFamily.GenericSerif, cellSize * 0.2f),
-                            Brushes.Black,
-                            cell.Col * cellSize,
-                            cell.Row * cellSize);
-                    }
+                    RenderPath(e, lineWidth, path);
                 }
             }
 
@@ -98,6 +93,26 @@ namespace Checkers
             {
                 var p = new Pen(Brushes.Green, lineWidth);
                 e.Graphics.DrawRectangle(p, _startCell.Col * cellSize, _startCell.Row * cellSize, cellSize - lineWidth, cellSize - lineWidth);
+            }
+        }
+
+        private static void RenderPath(PaintEventArgs e, int lineWidth, List<Cell> path)
+        {
+            foreach (var cell in path)
+            {
+                var p = new Pen(Brushes.Red, lineWidth);
+                e.Graphics.DrawRectangle(p,
+                    cell.Col * cellSize,
+                    cell.Row * cellSize,
+                    cellSize - lineWidth,
+                    cellSize - lineWidth);
+
+                var cellIndex = path.IndexOf(cell);
+                e.Graphics.DrawString(cellIndex.ToString(),
+                    new Font(FontFamily.GenericSerif, cellSize * 0.2f),
+                    Brushes.Black,
+                    cell.Col * cellSize,
+                    cell.Row * cellSize);
             }
         }
 
@@ -167,6 +182,7 @@ namespace Checkers
                 if (_startCell == null)
                 {
                     _startCell = cell;
+                    _aiMove = null;
                     _movements = _pathGenerator.GetPossibleMovements(_field, _startCell);
                 }
                 else
@@ -177,10 +193,19 @@ namespace Checkers
                         var path = _movements.Single(m => Helpers.CompareCells(m.Last(), cell)).ToList();
                         Helpers.MakeMove(_field, path);
                         _movements.Clear();
+                        this.Refresh();
+                        Thread.Sleep(1000);
+
+                        _aiMove = _checkersAlgorithm.GetNextMove(_field, Side.Black);
+                        if (_aiMove != null)
+                        {
+                            Helpers.MakeMove(_field, _aiMove);
+                        }
                     }
                     else
                     { // clicked in not allowed place - refresh start cell
                         _startCell = cell;
+                        _aiMove = null;
                         _movements = _pathGenerator.GetPossibleMovements(_field, _startCell);
                     }
                 }
