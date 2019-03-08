@@ -13,7 +13,7 @@ namespace Checkers.Core
             var paths = new List<List<Cell>>();
             var currentPath = new List<Cell>();
             GetPossibleMovementsRecursive(paths, currentPath, field, currentCell, currentCell);
-            if (paths.Any(p => p.Any(x => x.Kill))) //Any kill possible - remove no paths without kill
+            if (paths.Any(p => p.Any(x => x.Kill))) //Any kill possible - remove paths without kill
             {
                 paths = paths.Where(p => p.Any(x => x.Kill)).ToList();
             }

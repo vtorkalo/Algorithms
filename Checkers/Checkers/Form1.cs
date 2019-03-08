@@ -24,7 +24,7 @@ namespace Checkers
 
         private void button1_Click(object sender, EventArgs e)
         {
-            _field = TestFieldData.King_Moves_Case6();
+            _field = TestFieldData.King_Moves_Case7();
             pnlField.Refresh();
         }
 
@@ -102,11 +102,18 @@ namespace Checkers
                         cellSize - lineWidth,
                         cellSize - lineWidth);
 
-                    e.Graphics.DrawString(_currentPath.IndexOf(cell).ToString(),
+                var cellIndex = _currentPath.IndexOf(cell);
+                int yshift = 0;
+                if (_currentPath.Take(cellIndex).Contains(cell, new CellComparer()))
+                {
+                    yshift = 14;
+                }
+
+                    e.Graphics.DrawString(cellIndex.ToString(),
                         new Font(FontFamily.GenericSerif, cellSize * 0.2f),
                         Brushes.Black,
                         cell.Col * cellSize,
-                        cell.Row * cellSize);                
+                        cell.Row * cellSize + yshift);                
             }
 
             if (_selectedCell != null)
@@ -189,6 +196,7 @@ namespace Checkers
         private void button4_Click(object sender, EventArgs e)
         {
             _currentPath = _movements[_currentPathIndex];
+            button4.Text = _movements.IndexOf(_currentPath).ToString();
             _currentPathIndex++;
             if (_currentPathIndex>=_movements.Count)
             {
