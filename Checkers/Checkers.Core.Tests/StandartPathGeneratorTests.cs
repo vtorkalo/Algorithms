@@ -55,5 +55,15 @@ namespace Checkers.Core.Tests
 
             Assert.IsTrue(actual.SequenceEqual(expected, _pathComparer));
         }
+
+        [TestMethod]
+        public void GetPossibleMovements_Case5()
+        {
+            var field = TestFieldData.Standart_Moves_Case5();
+            var actual = _target.GetPossibleMovements(field, new Cell(7, 0));
+            var expected = new List<List<Cell>> { new List<Cell> { new Cell(6, 1), new Cell(5, 2), new Cell(6, 3), new Cell(7, 4), new Cell(6, 5), new Cell(5, 6), new Cell(4, 5), new Cell(3, 4), new Cell(4, 3), new Cell(5, 2), new Cell(4, 1), new Cell(3, 0), new Cell(2, 1), new Cell(1, 2), new Cell(2, 3), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6) }, new List<Cell> { new Cell(6, 1), new Cell(5, 2), new Cell(6, 3), new Cell(7, 4), new Cell(6, 5), new Cell(5, 6), new Cell(4, 5), new Cell(3, 4), new Cell(2, 3), new Cell(1, 2), new Cell(2, 1), new Cell(3, 0), new Cell(4, 1), new Cell(5, 2), new Cell(4, 3), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6) }, new List<Cell> { new Cell(6, 1), new Cell(5, 2), new Cell(6, 3), new Cell(7, 4), new Cell(6, 5), new Cell(5, 6), new Cell(4, 5), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6) }, new List<Cell> { new Cell(6, 1), new Cell(5, 2), new Cell(4, 1), new Cell(3, 0), new Cell(2, 1), new Cell(1, 2), new Cell(2, 3), new Cell(3, 4), new Cell(4, 3), new Cell(5, 2), new Cell(6, 3), new Cell(7, 4), new Cell(6, 5), new Cell(5, 6), new Cell(4, 5), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6) }, new List<Cell> { new Cell(6, 1), new Cell(5, 2), new Cell(4, 1), new Cell(3, 0), new Cell(2, 1), new Cell(1, 2), new Cell(2, 3), new Cell(3, 4), new Cell(4, 5), new Cell(5, 6), new Cell(6, 5), new Cell(7, 4), new Cell(6, 3), new Cell(5, 2), new Cell(4, 3), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6) }, new List<Cell> { new Cell(6, 1), new Cell(5, 2), new Cell(4, 1), new Cell(3, 0), new Cell(2, 1), new Cell(1, 2), new Cell(2, 3), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6) }, new List<Cell> { new Cell(6, 1), new Cell(5, 2), new Cell(4, 3), new Cell(3, 4), new Cell(4, 5), new Cell(5, 6), new Cell(6, 5), new Cell(7, 4), new Cell(6, 3), new Cell(5, 2), new Cell(4, 1), new Cell(3, 0), new Cell(2, 1), new Cell(1, 2), new Cell(2, 3), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6) }, new List<Cell> { new Cell(6, 1), new Cell(5, 2), new Cell(4, 3), new Cell(3, 4), new Cell(2, 3), new Cell(1, 2), new Cell(2, 1), new Cell(3, 0), new Cell(4, 1), new Cell(5, 2), new Cell(6, 3), new Cell(7, 4), new Cell(6, 5), new Cell(5, 6), new Cell(4, 5), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6) }, new List<Cell> { new Cell(6, 1), new Cell(5, 2), new Cell(4, 3), new Cell(3, 4), new Cell(2, 5), new Cell(1, 6) } };
+
+            Assert.IsTrue(actual.SequenceEqual(expected, _pathComparer));
+        }
     }
 }

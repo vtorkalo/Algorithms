@@ -106,7 +106,7 @@ namespace Checkers
                 int yshift = 0;
                 if (_currentPath.Take(cellIndex).Contains(cell, new CellComparer()))
                 {
-                    yshift = 14;
+                    yshift = 15;
                 }
 
                     e.Graphics.DrawString(cellIndex.ToString(),
