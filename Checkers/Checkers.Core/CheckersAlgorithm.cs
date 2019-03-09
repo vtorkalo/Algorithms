@@ -26,11 +26,7 @@ namespace Checkers.Core
             Move result = null;
             if (sorted.Any())
             {
-                var topGame = sorted.Where(x => x.Any()).First();
-                if (topGame.Any())
-                {
-                    result = topGame.FirstOrDefault();
-                }
+                result = sorted.Where(x => x.Any()).First().First();
             }
 
             return result;
@@ -83,7 +79,7 @@ namespace Checkers.Core
 
         private void GetPathsRecursive(List<Game> games, Game currentGame, CellState[,] currentField, Side side, int depth)
         {
-            if (depth > 20)
+            if (depth > 19)
             {
                 return;
             }
@@ -106,8 +102,10 @@ namespace Checkers.Core
                     GetPathsRecursive(games, newPath, newField, oppositeSide, depth);
                 }
             }
-
-            games.Add(currentGame);
+            if (currentGame.Any())
+            {
+                games.Add(currentGame);
+            }
         }
 
       
