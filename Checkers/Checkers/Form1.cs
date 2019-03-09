@@ -42,6 +42,7 @@ namespace Checkers
             {
                 MakeAiMove();
             }
+            GetAvaliableCells();
             UpdateUiState();
 
             pnlField.Refresh();
@@ -65,8 +66,6 @@ namespace Checkers
 
         private void pnlField_Paint(object sender, PaintEventArgs e)
         {
-            GetAvaliableCells();
-
             pnlField.Width = cellSize * 8;
             pnlField.Height = cellSize * 8;
 
@@ -193,12 +192,15 @@ namespace Checkers
 
         private void GetAvaliableCells()
         {
-            _avaliableCells = _checkersAlgorithm.GetAvaliableCells(_field, _currentSide);
-            if (!_avaliableCells.Any())
+            if (_gameStarted)
             {
-                _gameStarted = false;
-                UpdateUiState();
-                MessageBox.Show("You loose!");
+                _avaliableCells = _checkersAlgorithm.GetAvaliableCells(_field, _currentSide);
+                if (!_avaliableCells.Any())
+                {
+                    _gameStarted = false;
+                    UpdateUiState();
+                    MessageBox.Show("You loose!");
+                }
             }
         }
 
@@ -220,19 +222,24 @@ namespace Checkers
                     {
                         _startCell = null;
                         var path = _movements.Single(m => Helpers.CompareCells(m.Last(), cell));
+                        _avaliableCells.Clear();
                         Helpers.MakeMove(_field, path);
-                        _movements.Clear();
                         this.Refresh();
+                        _movements.Clear();
                         MakeAiMove();
+                        GetAvaliableCells();
+                        this.Refresh();
                     }
                     else if (_avaliableCells.Contains(cell, _cellComparer))
                     { // clicked in not allowed place - refresh start cell
                         SetStartCell(cell);
                     }
                 }
+                
 
                 pnlField.Refresh();
             }
+            GetAvaliableCells();
         }
 
         private void MakeAiMove()

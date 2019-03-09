@@ -17,29 +17,26 @@ namespace Checkers.Core
 
         public Move GetNextMove(CellState[,] field, Side aiSide)
         {
-            var paths = new List<List<Move>>();
-            var currentPath = new List<Move>();
+            var games = new List<Game>();
+            var currentGame = new Game();
             var currentField = Helpers.CopyField(field);
-            GetPathsRecursive(paths, currentPath, currentField, aiSide, 0);
-            var sorted = paths.GroupBy(x=> GetTreeKills(x))
-                              .OrderByDescending(x => x.Key).ToList();
+            GetPathsRecursive(games, currentGame, currentField, aiSide, 0);
+            var sorted = games.OrderByDescending(x => GetTreeKills(x));
 
             Move result = null;
             if (sorted.Any())
             {
-                var firstGroup = sorted.Where(x=>x.Any()).First().Where(x=>x.Any()).ToList();
-                if (firstGroup.Any())
+                var topGame = sorted.Where(x => x.Any()).First();
+                if (topGame.Any())
                 {
-                    var random = new Random();
-                    int randomIndex = random.Next(firstGroup.Count());
-                    result = firstGroup[randomIndex].FirstOrDefault();
+                    result = topGame.FirstOrDefault();
                 }
             }
 
             return result;
         }
 
-        private double GetTreeKills(List<Move> path)
+        private double GetTreeKills(Game game)
         {
             double aiKills = 0;
             double humanKills = 0;
@@ -48,22 +45,22 @@ namespace Checkers.Core
             double humanKings = 0;
             
 
-            for (int i=0; i<path.Count; i++)
+            for (int i=0; i<game.Count; i++)
             {
-                double weight = path.Count - i;
+                double weight = game.Count - i;
                 if (i % 2 ==0)
                 {
-                    aiKills += path[i].Kills * weight;
-                    aiKings += path[i].NewKings * weight;
+                    aiKills += game[i].Kills * weight;
+                    aiKings += game[i].NewKings * weight;
                 }
                 else
                 {
-                    humanKills += path[i].Kills * weight;
-                    humanKings += path[i].NewKings * weight;
+                    humanKills += game[i].Kills * weight;
+                    humanKings += game[i].NewKings * weight;
                 }
             }
 
-            double total = (aiKills - humanKills) + (aiKings - humanKings) *2 ;
+            double total = (aiKills - humanKills) + (aiKings - humanKings) * 2;
             return total;
         }
 
@@ -84,7 +81,7 @@ namespace Checkers.Core
             return possibleStartCells;
         }
 
-        private void GetPathsRecursive(List<List<Move>> paths, List<Move> currentPath, CellState[,] currentField, Side side, int depth)
+        private void GetPathsRecursive(List<Game> games, Game currentGame, CellState[,] currentField, Side side, int depth)
         {
             if (depth > 20)
             {
@@ -98,19 +95,19 @@ namespace Checkers.Core
             {
                 foreach (var move in cellPaths)
                 {
-                    var newPath = new List<Move>();
-                    newPath.AddRange(currentPath);
+                    var newPath = new Game();
+                    newPath.AddRange(currentGame);
                     newPath.Add(move);
 
                     var newField = Helpers.CopyField(currentField);
                     Helpers.MakeMove(newField, move);
 
                     depth++;
-                    GetPathsRecursive(paths, newPath, newField, oppositeSide, depth);
+                    GetPathsRecursive(games, newPath, newField, oppositeSide, depth);
                 }
             }
 
-            paths.Add(currentPath);
+            games.Add(currentGame);
         }
 
       
