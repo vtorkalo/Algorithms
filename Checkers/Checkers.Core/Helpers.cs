@@ -11,7 +11,7 @@ namespace Checkers.Core
             field[cell.Row, cell.Col] = cellState;
         }
 
-        public static void MakeMove(CellState[,] field, List<Cell> path)
+        public static void MakeMove(CellState[,] field, Move path)
         {
             var startCell = path.First();
             var endCell = path.Last();

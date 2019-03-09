@@ -32,8 +32,8 @@ namespace Checkers
         private void StartGame(Side side)
         {
             _currentSide = side;
-            _movements.Clear();
-            _aiMove.Clear();
+            _movements?.Clear();
+            _aiMove?.Clear();
             _startCell = null;
 
             _gameStarted = true;
@@ -57,7 +57,7 @@ namespace Checkers
         private List<Move> _movements = new List<Move>();
         private CellComparer _cellComparer = new CellComparer();
 
-        private List<Cell> _aiMove = new List<Cell>();
+        private Move _aiMove = null;
         private Side _currentSide = Side.White;
 
         private List<Cell> _avaliableCells = new List<Cell>();
@@ -219,7 +219,7 @@ namespace Checkers
                     if (_movements.Select(m => m.Last()).Contains(cell, _cellComparer))
                     {
                         _startCell = null;
-                        var path = _movements.Single(m => Helpers.CompareCells(m.Last(), cell)).ToList();
+                        var path = _movements.Single(m => Helpers.CompareCells(m.Last(), cell));
                         Helpers.MakeMove(_field, path);
                         _movements.Clear();
                         this.Refresh();

@@ -15,7 +15,7 @@ namespace Checkers.Core
     {
         private PathGenerator _pathGenerator = new PathGenerator();
 
-        public List<Cell> GetNextMove(CellState[,] field, Side aiSide)
+        public Move GetNextMove(CellState[,] field, Side aiSide)
         {
             var paths = new List<List<Move>>();
             var currentPath = new List<Move>();
@@ -23,7 +23,7 @@ namespace Checkers.Core
             GetPathsRecursive(paths, currentPath, currentField, aiSide, 0);
             var sorted = paths.GroupBy(x=> GetTreeKills(x)).OrderByDescending(x => x.Key).ToList();
 
-            List<Cell> result = null;
+            Move result = null;
             if (sorted.Any())
             {
                 var firstGroup = sorted.First().Where(x=>x.Any()).ToList();
