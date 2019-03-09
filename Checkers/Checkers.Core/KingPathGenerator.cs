@@ -47,7 +47,6 @@ namespace Checkers.Core
                     {
                         break;
                     }
-                  
 
                     if (newPath.Any() && newPath.Last().Row == 5 && newPath.Last().Col ==2)
                     {
@@ -57,8 +56,8 @@ namespace Checkers.Core
 
                     if (killFlag)
                     {
-                        var cellNeightbors = _kingNeightborsGenerator.GetKingNeightbors(field, startCell, startCellState, cell).Where(n => n.Any(x => x.Kill)).ToList();
-                        //var forceTurns = cellNeightbors.Where(n => !n.Where(x => x.Kill).Intersect(newPath, _comparer).Any());
+                        var cellNeightbors = _kingNeightborsGenerator.GetKingNeightbors(field, startCell, startCellState, cell)
+                            .Where(n => n.Any(x => x.Kill)).ToList();
                         var forceTurns = cellNeightbors.Where(n => !newPath.Contains(n.First(x => x.Kill), _comparer));
 
                         if (forceTurns.Any())

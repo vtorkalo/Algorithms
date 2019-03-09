@@ -21,12 +21,15 @@ namespace Checkers.Core
             var currentPath = new List<List<Cell>>();
             var currentField = Helpers.CopyField(field);
             GetPathsRecursive(paths, currentPath, currentField, aiSide, 0);
-            var sorted = paths.OrderByDescending(x => GetTreeKills(x)).ToList();
+            var sorted = paths.GroupBy(x=> GetTreeKills(x)).OrderByDescending(x => x.Key).ToList();
 
             List<Cell> result = null;
             if (sorted.Any())
             {
-                result = sorted.First().FirstOrDefault();
+                var firstGroup = sorted.First().ToList();
+                var random = new Random();
+                int randomIndex = random.Next(firstGroup.Count-1);
+                result = firstGroup[randomIndex].First();
             }
 
             return result;
@@ -55,20 +58,32 @@ namespace Checkers.Core
             return total;
         }
 
+        public List<Cell> GetAvaliableCells(CellState[,] field, Side side)
+        {
+            var cells = Helpers.GetCellsOfSide(field, side);
+            var possibleStartCells = GetAvaliableCellMoves(field, cells);
+            return possibleStartCells.Select(c => c.First().First()).ToList();
+        }
+
+        public List<List<List<Cell>>> GetAvaliableCellMoves(CellState[,] field, List<Cell> cells)
+        {
+            var possibleStartCells = cells.Select(c => _pathGenerator.GetPossibleMovements(field, c).ToList()).Where(x=>x.Any()).ToList();
+            if (possibleStartCells.Any(cm => cm.Any(m => m.Any(x => x.Kill))))
+            {
+                possibleStartCells = possibleStartCells.Where(cm => cm.Any(x => x.Any(c => c.Kill))).ToList();
+            }
+            return possibleStartCells;
+        }
+
         private void GetPathsRecursive(List<List<List<Cell>>> paths, List<List<Cell>> currentPath, CellState[,] currentField, Side side, int depth)
         {
-            if (depth > 15)
+            if (depth > 17)
             {
                 return;
             }
             var oppositeSide = Helpers.GetOppositeSide(side);
             var aiCells = Helpers.GetCellsOfSide(currentField, side);
-
-            var possibleStartCells = aiCells.Select(c => _pathGenerator.GetPossibleMovements(currentField, c)).ToList();
-            if (possibleStartCells.Any(cm=>cm.Any(m=>m.Any(x=>x.Kill))))
-            {
-                possibleStartCells = possibleStartCells.Where(cm => cm.Any(x => x.Any(c => c.Kill))).ToList();
-            }
+            var possibleStartCells = GetAvaliableCellMoves(currentField, aiCells);
 
             foreach (var cellPaths in possibleStartCells)
             {
