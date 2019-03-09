@@ -53,15 +53,8 @@ namespace Checkers.Core
 
         public static CellState[,] CopyField(CellState[,] field)
         {
-            int rows = field.GetLength(0);
-            int cols = field.GetLength(0);
-            var result = new CellState[rows, cols];
-
-            for (int row = 0; row < rows; row++)
-                for (int col = 0; col < cols; col++)
-                {
-                    result[row, col] = field[row, col];
-                }
+            var result = new CellState[8, 8];
+            Array.Copy(field, result, 64);
 
             return result;
         }

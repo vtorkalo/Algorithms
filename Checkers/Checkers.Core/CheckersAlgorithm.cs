@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Checkers.Core
 {
@@ -13,6 +14,8 @@ namespace Checkers.Core
 
     public class CheckersAlgorithm
     {
+        Object lockObj = new Object();
+
         private PathGenerator _pathGenerator = new PathGenerator();
 
         public Move GetNextMove(CellState[,] field, Side aiSide)
@@ -34,30 +37,39 @@ namespace Checkers.Core
 
         private void GetPathsRecursive(List<Game> games, Game currentGame, CellState[,] currentField, Side side, int depth)
         {
-            if (depth > 7)
+            if (depth > 8)
             {
                 return;
             }
             var oppositeSide = Helpers.GetOppositeSide(side);
             var aiCells = Helpers.GetCellsOfSide(currentField, side);
-            var possibleStartCells = GetAvaliableCellMoves(currentField, aiCells);
+            var possibleStartCells = GetAvaliableCellMoves(currentField, aiCells).ToList();
 
-            foreach (var cellPaths in possibleStartCells)
-            {
-                foreach (var move in cellPaths)
+            Parallel.ForEach(possibleStartCells,
+                new ParallelOptions
                 {
-                    var newPath = new Game();
-                    newPath.AddRange(currentGame);
-                    newPath.Add(move);
+                    MaxDegreeOfParallelism = Environment.ProcessorCount
+                },
+                cellPaths => 
+                {
+                    foreach (var move in cellPaths)
+                    {
+                        var newPath = new Game();
+                        newPath.AddRange(currentGame);
+                        newPath.Add(move);
 
-                    var newField = Helpers.CopyField(currentField);
-                    Helpers.MakeMove(newField, move);
-                    GetPathsRecursive(games, newPath, newField, oppositeSide, depth + 1);
-                }
-            }
-            if (currentGame.Any())
+                        var newField = Helpers.CopyField(currentField);
+                        Helpers.MakeMove(newField, move);
+                        GetPathsRecursive(games, newPath, newField, oppositeSide, depth + 1);
+                    }
+                });
+
+            lock (lockObj)
             {
-                games.Add(currentGame);
+                if (currentGame.Any())
+                {
+                    games.Add(currentGame);
+                }
             }
         }
 
