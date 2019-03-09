@@ -13,9 +13,9 @@ namespace Checkers.Core
 
         }
 
-        public List<List<Cell>> GetPossibleMovements(CellState[,] field, Cell startCell)
+        public List<Move> GetPossibleMovements(CellState[,] field, Cell startCell)
         {
-            var result = new List<List<Cell>>();
+            var result = new List<Move>();
             var state = Helpers.GetCellState(field, startCell);
             if (state == CellState.White || state == CellState.Black)
             {

@@ -17,8 +17,8 @@ namespace Checkers.Core
 
         public List<Cell> GetNextMove(CellState[,] field, Side aiSide)
         {
-            var paths = new List<List<List<Cell>>>();
-            var currentPath = new List<List<Cell>>();
+            var paths = new List<List<Move>>();
+            var currentPath = new List<Move>();
             var currentField = Helpers.CopyField(field);
             GetPathsRecursive(paths, currentPath, currentField, aiSide, 0);
             var sorted = paths.GroupBy(x=> GetTreeKills(x)).OrderByDescending(x => x.Key).ToList();
@@ -26,16 +26,16 @@ namespace Checkers.Core
             List<Cell> result = null;
             if (sorted.Any())
             {
-                var firstGroup = sorted.First().ToList();
+                var firstGroup = sorted.First().Where(x=>x.Any()).ToList();
                 var random = new Random();
-                int randomIndex = random.Next(firstGroup.Count-1);
+                int randomIndex = random.Next(firstGroup.Count());
                 result = firstGroup[randomIndex].First();
             }
 
             return result;
         }
 
-        private int GetTreeKills(List<List<Cell>> path)
+        private int GetTreeKills(List<Move> path)
         {
             int aiKills = 0;
             int humanKills = 0;
@@ -65,7 +65,7 @@ namespace Checkers.Core
             return possibleStartCells.Select(c => c.First().First()).ToList();
         }
 
-        public List<List<List<Cell>>> GetAvaliableCellMoves(CellState[,] field, List<Cell> cells)
+        public List<List<Move>> GetAvaliableCellMoves(CellState[,] field, List<Cell> cells)
         {
             var possibleStartCells = cells.Select(c => _pathGenerator.GetPossibleMovements(field, c).ToList()).Where(x=>x.Any()).ToList();
             if (possibleStartCells.Any(cm => cm.Any(m => m.Any(x => x.Kill))))
@@ -75,9 +75,9 @@ namespace Checkers.Core
             return possibleStartCells;
         }
 
-        private void GetPathsRecursive(List<List<List<Cell>>> paths, List<List<Cell>> currentPath, CellState[,] currentField, Side side, int depth)
+        private void GetPathsRecursive(List<List<Move>> paths, List<Move> currentPath, CellState[,] currentField, Side side, int depth)
         {
-            if (depth > 17)
+            if (depth > 20)
             {
                 return;
             }
@@ -89,7 +89,7 @@ namespace Checkers.Core
             {
                 foreach (var move in cellPaths)
                 {
-                    var newPath = new List<List<Cell>>();
+                    var newPath = new List<Move>();
                     newPath.AddRange(currentPath);
                     newPath.Add(move);
 

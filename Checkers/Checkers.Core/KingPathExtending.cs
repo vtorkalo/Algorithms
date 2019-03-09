@@ -8,16 +8,16 @@ namespace Checkers.Core
         private CellComparer _comparer = new CellComparer();
         private KingNeightborGenerator _kingNeightborsGenerator = new KingNeightborGenerator();
 
-        public List<List<Cell>> TrimmPaths(List<List<Cell>> paths)
+        public List<Move> TrimmPaths(List<Move> paths)
         {
-            var trimmedResult = new List<List<Cell>>();
+            var trimmedResult = new List<Move>();
             foreach (var path in paths)
             {
                 trimmedResult.Add(TrimmPath(path));
             }
             trimmedResult = trimmedResult.OrderByDescending(p => p.Count).ToList();
 
-            var result = new List<List<Cell>>();
+            var result = new List<Move>();
             foreach (var path in trimmedResult)
             {
                 if (!result.Any(r => r.Take(path.Count).SequenceEqual(path, _comparer)))
@@ -29,37 +29,37 @@ namespace Checkers.Core
             return result;
         }
 
-        public List<Cell> TrimmPath(List<Cell> path)
+        public Move TrimmPath(Move path)
         {
             var lastKill = path.LastOrDefault(p => p.Kill);
             if (lastKill != null)
             {
                 var lastKillIndex = path.IndexOf(lastKill);
-                var trimmedPath = path.Take(lastKillIndex + 2).ToList();
+                var trimmedPath = new Move(path.Take(lastKillIndex + 2));
                 return trimmedPath;
             }
             else
             {
-                return path.Take(1).ToList();
+                return new Move (path.Take(1));
             }
         }
 
-        public List<List<Cell>> ExpandPaths(CellState[,] field, Cell startCell, List<List<Cell>> paths)
+        public List<Move> ExpandPaths(CellState[,] field, Cell startCell, List<Move> paths)
         {
             var startCellState = Helpers.GetCellState(field, startCell);
-            var expandedPaths = new List<List<Cell>>();
+            var expandedPaths = new List<Move>();
             foreach (var path in paths)
             {
                 path.Insert(0, startCell);
                 List<Cell> neigthboards = GetLineAfterPathEnd(field, startCell, startCellState, path);
 
-                expandedPaths.Add(path.ToList());
+                expandedPaths.Add(path);
                 foreach (var n in neigthboards)
                 {
-                    var expandedPath = new List<Cell>();
+                    var expandedPath = new Move();
                     expandedPath.AddRange(expandedPaths.Last());
                     expandedPath.Add(n);
-                    expandedPaths.Add(expandedPath.ToList());
+                    expandedPaths.Add(expandedPath);
                 }
             }
 

@@ -30,8 +30,8 @@ namespace Checkers
 
         private CellState[,] _field = Helpers.GetInitialField();
         private Cell _selectedCell = null;
-        private List<List<Cell>> _movements = new List<List<Cell>>();
-        private List<Cell> _currentPath = new List<Cell>();
+        private List<Move> _movements = new List<Move>();
+        private Move _currentPath = new Move();
         int _currentPathIndex = 0;
 
         private void pnlField_Paint(object sender, PaintEventArgs e)

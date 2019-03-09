@@ -54,7 +54,7 @@ namespace Checkers
 
         private CellState[,] _field = Helpers.GetInitialField();
         private Cell _startCell = null;
-        private List<List<Cell>> _movements = new List<List<Cell>>();
+        private List<Move> _movements = new List<Move>();
         private CellComparer _cellComparer = new CellComparer();
 
         private List<Cell> _aiMove = new List<Cell>();

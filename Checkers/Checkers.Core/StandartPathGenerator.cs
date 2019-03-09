@@ -8,10 +8,10 @@ namespace Checkers.Core
     public class StandartPathGenerator : IPathGenerator
     {
 
-        public List<List<Cell>> GetPossibleMovements(CellState[,] field, Cell currentCell)
+        public List<Move> GetPossibleMovements(CellState[,] field, Cell currentCell)
         {
-            var paths = new List<List<Cell>>();
-            var currentPath = new List<Cell>();
+            var paths = new List<Move>();
+            var currentPath = new Move();
             GetPossibleMovementsRecursive(paths, currentPath, field, currentCell, currentCell);
             if (paths.Any(p => p.Any(x => x.Kill))) //Any kill possible - remove paths without kill
             {
@@ -24,7 +24,7 @@ namespace Checkers.Core
             return paths;
         }
         
-        private void GetPossibleMovementsRecursive(List<List<Cell>> paths, List<Cell> currentPath, CellState[,] field, Cell startCell, Cell currentCell)
+        private void GetPossibleMovementsRecursive(List<Move> paths, Move currentPath, CellState[,] field, Cell startCell, Cell currentCell)
         {
             var startCellState = Helpers.GetCellState(field, startCell);
             var neightbors = Helpers.GetNeightbors(currentCell, startCellState);
@@ -37,7 +37,7 @@ namespace Checkers.Core
                    && !neightbor.IsBack
                    && !currentPath.Any()) //first movement in path to empty cell
                 {
-                    paths.Add(new List<Cell> {neightbor });
+                    paths.Add(new Move { neightbor });
                 }
                 else
                 {
@@ -62,7 +62,7 @@ namespace Checkers.Core
                         kill: true
                     );
 
-                    var newPath = new List<Cell>();
+                    var newPath = new Move();
                     newPath.AddRange(currentPath);
                     newPath.Add(killCell);
                     Cell afterKillCell = Helpers.GetCellAfterKill(currentCell, nextCell);
