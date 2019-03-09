@@ -21,15 +21,19 @@ namespace Checkers.Core
             var currentPath = new List<Move>();
             var currentField = Helpers.CopyField(field);
             GetPathsRecursive(paths, currentPath, currentField, aiSide, 0);
-            var sorted = paths.GroupBy(x=> GetTreeKills(x)).OrderByDescending(x => x.Key).ToList();
+            var sorted = paths.GroupBy(x=> GetTreeKills(x))
+                              .OrderByDescending(x => x.Key).ToList();
 
             Move result = null;
             if (sorted.Any())
             {
-                var firstGroup = sorted.First().Where(x=>x.Any()).ToList();
-                var random = new Random();
-                int randomIndex = random.Next(firstGroup.Count());
-                result = firstGroup[randomIndex].First();
+                var firstGroup = sorted.Where(x=>x.Any()).First().Where(x=>x.Any()).ToList();
+                if (firstGroup.Any())
+                {
+                    var random = new Random();
+                    int randomIndex = random.Next(firstGroup.Count());
+                    result = firstGroup[randomIndex].FirstOrDefault();
+                }
             }
 
             return result;
@@ -40,21 +44,25 @@ namespace Checkers.Core
             int aiKills = 0;
             int humanKills = 0;
 
+            int aiKings = 0;
+            int humanKings = 0;
+            
+
             for (int i=0; i<path.Count; i++)
             {
-                var moveKillCount = path[i].Count(x => x.Kill);
-
                 if (i % 2 ==0)
                 {
-                    aiKills += moveKillCount;
+                    aiKills += path[i].Kills;
+                    aiKings += path[i].NewKings;
                 }
                 else
                 {
-                    humanKills += moveKillCount;
+                    humanKills += path[i].Kills;
+                    humanKings += path[i].NewKings;
                 }
             }
 
-            int total = aiKills - humanKills;
+            int total = (aiKills - humanKills) + (aiKings - humanKings) *2 ;
             return total;
         }
 
@@ -77,7 +85,7 @@ namespace Checkers.Core
 
         private void GetPathsRecursive(List<List<Move>> paths, List<Move> currentPath, CellState[,] currentField, Side side, int depth)
         {
-            if (depth > 20)
+            if (depth > 15)
             {
                 return;
             }

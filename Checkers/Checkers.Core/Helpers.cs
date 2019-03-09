@@ -11,7 +11,7 @@ namespace Checkers.Core
             field[cell.Row, cell.Col] = cellState;
         }
 
-        public static void MakeMove(CellState[,] field, Move path)
+        public static Move MakeMove(CellState[,] field, Move path)
         {
             var startCell = path.First();
             var endCell = path.Last();
@@ -19,6 +19,7 @@ namespace Checkers.Core
             foreach (var kill in kills)
             {
                 SetCell(field, kill, CellState.Empty);
+                path.Kills++;
             }
 
             var startCellState = GetCellState(field, startCell);
@@ -32,6 +33,7 @@ namespace Checkers.Core
                 if (state == CellState.White && cell.Row == 0)
                 {
                     SetCell(field, cell, CellState.WhiteKing);
+                    path.NewKings++;
                 }
             }
 
@@ -42,8 +44,11 @@ namespace Checkers.Core
                 if (state == CellState.Black && cell.Row == 7)
                 {
                     SetCell(field, cell, CellState.BlackKing);
+                    path.NewKings++;
                 }
             }
+
+            return path;
         }
 
         public static CellState[,] CopyField(CellState[,] field)

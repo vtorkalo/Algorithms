@@ -243,6 +243,11 @@ namespace Checkers
             {
                 Helpers.MakeMove(_field, _aiMove);
             }
+            else
+            {
+                MessageBox.Show("You win!");
+                _gameStarted = false;
+            }
         }
 
         private void SetStartCell(Cell cell)
