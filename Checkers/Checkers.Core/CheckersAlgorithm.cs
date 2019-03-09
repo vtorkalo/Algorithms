@@ -39,30 +39,31 @@ namespace Checkers.Core
             return result;
         }
 
-        private int GetTreeKills(List<Move> path)
+        private double GetTreeKills(List<Move> path)
         {
-            int aiKills = 0;
-            int humanKills = 0;
+            double aiKills = 0;
+            double humanKills = 0;
 
-            int aiKings = 0;
-            int humanKings = 0;
+            double aiKings = 0;
+            double humanKings = 0;
             
 
             for (int i=0; i<path.Count; i++)
             {
+                double weight = path.Count - i;
                 if (i % 2 ==0)
                 {
-                    aiKills += path[i].Kills;
-                    aiKings += path[i].NewKings;
+                    aiKills += path[i].Kills * weight;
+                    aiKings += path[i].NewKings * weight;
                 }
                 else
                 {
-                    humanKills += path[i].Kills;
-                    humanKings += path[i].NewKings;
+                    humanKills += path[i].Kills * weight;
+                    humanKings += path[i].NewKings * weight;
                 }
             }
 
-            int total = (aiKills - humanKills) + (aiKings - humanKings) *2 ;
+            double total = (aiKills - humanKills) + (aiKings - humanKings) *2 ;
             return total;
         }
 
@@ -85,7 +86,7 @@ namespace Checkers.Core
 
         private void GetPathsRecursive(List<List<Move>> paths, List<Move> currentPath, CellState[,] currentField, Side side, int depth)
         {
-            if (depth > 15)
+            if (depth > 20)
             {
                 return;
             }
