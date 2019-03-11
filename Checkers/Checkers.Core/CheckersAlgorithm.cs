@@ -12,6 +12,13 @@ namespace Checkers.Core
         Black
     }
 
+    public struct QueueItem
+    {
+        public Game currentGame { get; set; }
+        public CellState[,] currentField { get; set; }
+    }
+
+
     public class CheckersAlgorithm
     {
         Object lockObj = new Object();
@@ -23,6 +30,18 @@ namespace Checkers.Core
             var games = new List<Game>();
             var currentGame = new Game();
             var currentField = Helpers.CopyField(field);
+
+
+            var queue = new Queue<QueueItem>();
+            queue.Enqueue(new QueueItem
+            {
+                currentGame = currentGame,
+                currentField = Helpers.CopyField(field);
+            });
+
+
+
+
             GetPathsRecursive(games, currentGame, currentField, aiSide, 0);
             var sorted = games.OrderByDescending(x => GetTreeKills(x));
 
@@ -37,7 +56,7 @@ namespace Checkers.Core
 
         private void GetPathsRecursive(List<Game> games, Game currentGame, CellState[,] currentField, Side side, int depth)
         {
-            if (depth > 7)
+            if (depth > 6)
             {
                 return;
             }
