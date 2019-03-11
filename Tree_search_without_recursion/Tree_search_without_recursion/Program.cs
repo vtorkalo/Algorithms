@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Depth_first_search_Iterative
 {
@@ -15,7 +16,7 @@ namespace Depth_first_search_Iterative
             // for width first search
             //var container = new StackContainer<string>();
 
-            container.Add(@"d:\");
+            container.Add(@"c:\");
             var allNodes = new List<string>();
 
             while (container.Any())

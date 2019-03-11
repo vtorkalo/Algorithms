@@ -37,7 +37,7 @@ namespace Checkers.Core
 
         private void GetPathsRecursive(List<Game> games, Game currentGame, CellState[,] currentField, Side side, int depth)
         {
-            if (depth > 8)
+            if (depth > 7)
             {
                 return;
             }
