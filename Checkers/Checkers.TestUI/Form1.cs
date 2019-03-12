@@ -28,7 +28,7 @@ namespace Checkers
             pnlField.Refresh();
         }
 
-        private CellState[,] _field = Helpers.GetInitialField();
+        private CellState[] _field = Helpers.GetInitialField();
         private Cell _selectedCell = null;
         private List<Move> _movements = new List<Move>();
         private Move _currentPath = new Move();
@@ -50,7 +50,7 @@ namespace Checkers
                     var brush = color == 0 ? Brushes.LightGray : Brushes.White;
                     e.Graphics.FillRectangle(brush, x * cellSize, y * cellSize, cellSize, cellSize);
 
-                    CellState state = _field[y, x];
+                    CellState state = Field.GetValue(_field,y, x);
                     Brush checkerColor = Brushes.White;
                     switch (state)
                     {
@@ -143,7 +143,7 @@ namespace Checkers
         {
             if (_selectedCell != null)
             {
-                _field[_selectedCell.Row, _selectedCell.Col] = state;
+                Field.SetValue(_field, _selectedCell.Row, _selectedCell.Col, state);
                 pnlField.Refresh();
             }
         }
@@ -185,12 +185,6 @@ namespace Checkers
                 pnlField.Refresh();
                 button4_Click(sender, e);
             }
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            _field = new CellState[8, 8];
-            pnlField.Refresh();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -240,9 +234,10 @@ namespace Checkers
             for (int row =0; row<8; row++)
                 for (int col = 0; col < 8; col++)
                 {
-                    if (_field[row, col] != CellState.Empty)
+                    var value = Field.GetValue(_field, row, col);
+                    if (value != CellState.Empty)
                     {
-                        builder.AppendLine(string.Format("result[{0}, {1}] = CellState.{2};", row, col, _field[row, col].ToString()));
+                        builder.AppendLine(string.Format("result[{0}, {1}] = CellState.{2};", row, col, value.ToString()));
                     }
                 }
             if (_selectedCell != null)

@@ -39,5 +39,16 @@ namespace Checkers.Core
         {
             SetValue(field, cell.Row, cell.Col, value);
         }
+
+        public static CellState[] From2dTo1d(CellState[,] field2d)
+        {
+            var result = new CellState[32];
+            for (int i=0; i<32; i++)
+            {
+                GetRowCol(i, out int row, out int col);
+                result[i] = field2d[row, col];
+            }
+            return result;
+        }
     }
 }
