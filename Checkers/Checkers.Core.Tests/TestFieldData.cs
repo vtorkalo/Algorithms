@@ -146,20 +146,44 @@ namespace Checkers.Core.Tests
             return result;
         }
 
+        public static CellState[] Standart_Moves_CaseStandardToKingDuringMove()
+        {
+            var result = Helpers.GetEmptyField();
+            Field.SetValue(result, 1, 4, CellState.White);
+
+            Field.SetValue(result, 3, 4, CellState.Black);
+
+            Field.SetValue(result, 4, 3, CellState.White);
+
+            Field.SetValue(result, 5, 6, CellState.White);
+
+            Field.SetValue(result, 6, 3, CellState.White);
+
+            //selectedCell 3 4
+
+
+            return result;
+        }
+
+   
+
+
         public static CellState[] Standart_Moves_Case5()
         {
             var result = Helpers.GetEmptyField();
 
-            Field.SetValue(result, 2, 1, CellState.White);
-            Field.SetValue(result, 2, 3, CellState.White);
-            Field.SetValue(result, 2, 5, CellState.White);
-            Field.SetValue(result, 4, 1, CellState.White);
-            Field.SetValue(result, 4, 3, CellState.White);
-            Field.SetValue(result, 4, 5, CellState.White);
-            Field.SetValue(result, 6, 1, CellState.White);
-            Field.SetValue(result, 6, 3, CellState.White);
-            Field.SetValue(result, 6, 5, CellState.White);
-            Field.SetValue(result, 7, 0, CellState.Black);
+            Field.SetValue(result, 2, 1, CellState.Black);
+            Field.SetValue(result, 2, 3, CellState.Black);
+            Field.SetValue(result, 2, 5, CellState.Black);
+            Field.SetValue(result, 4, 1, CellState.Black);
+            Field.SetValue(result, 4, 3, CellState.Black);
+            Field.SetValue(result, 4, 5, CellState.Black);
+            Field.SetValue(result, 6, 1, CellState.Black);
+            Field.SetValue(result, 6, 3, CellState.Black);
+            Field.SetValue(result, 6, 5, CellState.Black);
+
+
+            Field.SetValue(result, 7, 0, CellState.White);
 
             //selectedCell 7 0
 

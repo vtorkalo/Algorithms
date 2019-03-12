@@ -7,6 +7,7 @@ namespace Checkers.Core
 {
     public class StandartPathGenerator : IPathGenerator
     {
+        private KingPathGenerator _kingPathGenerator = new KingPathGenerator();
 
         public List<Move> GetPossibleMovements(CellState[] field, Cell currentCell)
         {
@@ -26,14 +27,15 @@ namespace Checkers.Core
         
         private void GetPossibleMovementsRecursive(List<Move> paths, Move currentPath, CellState[] field, Cell startCell, Cell currentCell)
         {
-            var startCellState = Helpers.GetCellState(field, startCell);
+            var fieldCopy = Helpers.CopyField(field);
+            var startCellState = Helpers.GetCellState(fieldCopy, startCell);
             var neightbors = Helpers.GetNeightbors(currentCell, startCellState);
             var possibleEnemies = new List<Cell>();
 
             foreach (var neightbor in neightbors)
             {
                 var emptyCells = new List<Cell>();
-                if (Helpers.IsFree(field, startCell, neightbor)
+                if (Helpers.IsFree(fieldCopy, startCell, neightbor)
                    && !neightbor.IsBack
                    && !currentPath.Any()) //first movement in path to empty cell
                 {
@@ -51,9 +53,9 @@ namespace Checkers.Core
             bool anyKill = false;
             foreach (var nextCell in possibleEnemies)
             {
-                var nextCellState = Helpers.GetCellState(field, nextCell);
+                var nextCellState = Helpers.GetCellState(fieldCopy, nextCell);
                 if (Helpers.IsEnemy(startCellState, nextCellState)
-                     && Helpers.CanKill(field, currentCell, nextCell, startCell))
+                     && Helpers.CanKill(fieldCopy, currentCell, nextCell, startCell))
                 {
                     var killCell = new Cell
                     (
@@ -71,7 +73,35 @@ namespace Checkers.Core
                     newPath.Add(afterKillCell);
                     anyKill = true;
 
-                    GetPossibleMovementsRecursive(paths, newPath, field, startCell, afterKillCell);
+                    if (afterKillCell.Row == 0 && startCellState == CellState.White
+                        || afterKillCell.Row == 7 && startCellState == CellState.Black)
+                    {
+                        
+
+                        if (Helpers.IsWhite(startCellState))
+                        {
+                            Field.SetValue(fieldCopy, afterKillCell, CellState.WhiteKing);
+                        }
+
+                        if (Helpers.IsBlack(startCellState))
+                        {
+                            Field.SetValue(fieldCopy, afterKillCell, CellState.BlackKing);
+                        }
+
+                        foreach (var c in currentPath.Where(x=>x.Kill))
+                        {
+                            Field.SetValue(fieldCopy, c, CellState.Empty);
+                        }
+
+                        var moves = _kingPathGenerator.GetPossibleMovements(fieldCopy, afterKillCell);
+
+                        if (moves.Any(m=>m.Any(x=>x.Kill)))
+                        {
+                            newPath.AddRange(moves.First());
+                        }
+                    }
+
+                    GetPossibleMovementsRecursive(paths, newPath, fieldCopy, startCell, afterKillCell);
                 }
             }
             if (!anyKill && currentPath.Any())

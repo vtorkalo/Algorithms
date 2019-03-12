@@ -23,7 +23,6 @@ namespace Checkers.Core.Tests
             var actual = _target.GetPossibleMovements(field, new Cell(6, 3));
             var expected = new List<Move> { new Move { new Cell(6, 3), new Cell(5, 2), new Cell(4, 1) }, new Move { new Cell(6, 3), new Cell(5, 4), new Cell(4, 5), new Cell(3, 4), new Cell(2, 3), new Cell(1, 4), new Cell(0, 5), new Cell(1, 6), new Cell(2, 7), new Cell(3, 6), new Cell(4, 5), new Cell(5, 6), new Cell(6, 7) }, new Move { new Cell(6, 3), new Cell(5, 4), new Cell(4, 5), new Cell(3, 6), new Cell(2, 7), new Cell(1, 6), new Cell(0, 5), new Cell(1, 4), new Cell(2, 3), new Cell(3, 4), new Cell(4, 5), new Cell(5, 6), new Cell(6, 7) }, new Move { new Cell(6, 3), new Cell(5, 4), new Cell(4, 5), new Cell(5, 6), new Cell(6, 7) } };
 
-           
 
             Assert.IsTrue(actual.SequenceEqual(expected, _pathComparer));
         }
