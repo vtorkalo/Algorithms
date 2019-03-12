@@ -16,84 +16,78 @@ namespace Checkers.Core
         public Game currentGame { get; set; }
         public CellState[,] currentField { get; set; }
         public Side side { get; set; }
+        public int depth { get; set; }
     }
 
 
     public class CheckersAlgorithm
     {
         Object lockObj = new Object();
-        Object countLock = new Object();
 
         private PathGenerator _pathGenerator = new PathGenerator();
 
         public Move GetNextMove(CellState[,] field, Side aiSide)
         {
             var games = new List<Game>();
-            var currentField = Helpers.CopyField(field);
-            int count = 0;
+            int iterationCount = 0;
 
             var queue = new Queue<QueueItem>();
             queue.Enqueue(new QueueItem
             {
                 currentGame = new Game(),
                 currentField = Helpers.CopyField(field),
-                side = aiSide
+                side = aiSide,
+                depth = 0
             });
 
-            while (queue.Any())
+
+            while (AnyInQueue(queue))
             {
+                iterationCount++;
                 var quequeItem = queue.Dequeue();
-                lock (countLock)
+
+                if (iterationCount > 100000)
                 {
-                    if (count > 100000)
-                    {
-                        continue;
-                    }
+                    games.Add(quequeItem.currentGame);
+                    continue;
                 }
 
                 var oppositeSide = Helpers.GetOppositeSide(quequeItem.side);
-                var aiCells = Helpers.GetCellsOfSide(currentField, quequeItem.side);
-                var possibleStartCells = GetAvaliableCellMoves(currentField, aiCells).ToList();
+                var aiCells = Helpers.GetCellsOfSide(quequeItem.currentField, quequeItem.side);
+                var possibleStartCells = GetAvaliableCellMoves(quequeItem.currentField, aiCells).ToList();
+                if (iterationCount == 1 && possibleStartCells.Count == 1 && possibleStartCells.Single().Count == 1)
+                {
+                    return possibleStartCells.First().First();
+                }
 
                 Parallel.ForEach(possibleStartCells,
                     new ParallelOptions
                     {
-                        MaxDegreeOfParallelism = 1// Environment.ProcessorCount
+                        MaxDegreeOfParallelism = Environment.ProcessorCount
                     },
                     cellPaths =>
                     {
-
                         foreach (var move in cellPaths)
                         {
                             var newPath = new Game();
                             newPath.AddRange(quequeItem.currentGame);
                             newPath.Add(move);
 
-                            var newField = Helpers.CopyField(currentField);
+                            var newField = Helpers.CopyField(quequeItem.currentField);
                             Helpers.MakeMove(newField, move);
-                            //GetPathsRecursive(games, newPath, newField, oppositeSide, depth + 1);
-                            queue.Enqueue(new QueueItem
-                            {
-                                currentGame = newPath,
-                                currentField = newField,
-                                side = oppositeSide
-                            });
+
                             lock (lockObj)
                             {
-                                if (quequeItem.currentGame.Any())
+                                queue.Enqueue(new QueueItem
                                 {
-                                    games.Add(quequeItem.currentGame);
-                                }
-                                lock (countLock)
-                                {
-                                    count++;
-                                }
+                                    currentGame = newPath,
+                                    currentField = newField,
+                                    side = oppositeSide,
+                                    depth = quequeItem.depth + 1
+                                });
                             }
                         }
                     });
-
-
-
             }
 
 
@@ -109,6 +103,14 @@ namespace Checkers.Core
             return result;
         }
 
+        private bool AnyInQueue(Queue<QueueItem> queue)
+        {
+            lock (lockObj)
+            {
+                return queue.Any();
+            }
+        }
+
         private double GetTreeKills(Game game)
         {
             double aiKills = 0;
@@ -116,11 +118,11 @@ namespace Checkers.Core
 
             double aiKings = 0;
             double humanKings = 0;
+            int count = game.Count % 2 == 0 ? game.Count : game.Count - 1;
 
-
-            for (int i = 0; i < game.Count; i++)
+            for (int i = 0; i < count; i++)
             {
-                double weight = game.Count - i;
+                double weight = 5 + game.Count - i;
                 if (i % 2 == 0)
                 {
                     aiKills += game[i].Kills * weight;
@@ -134,6 +136,7 @@ namespace Checkers.Core
             }
 
             double total = (aiKills - humanKills) + (aiKings - humanKings) * 2;
+
             return total;
         }
 

@@ -48,10 +48,6 @@ namespace Checkers.Core
                         break;
                     }
 
-                    if (newPath.Any() && newPath.Last().Row == 5 && newPath.Last().Col ==2)
-                    {
-                       
-                    }
                     newPath.Add(cell);
 
                     if (killFlag)
@@ -66,10 +62,6 @@ namespace Checkers.Core
                             {
                                 var turnNewPath = new List<Cell>();
                                 turnNewPath.AddRange(newPath);
-                                if (cell.Row == 1 && cell.Col == 2 && newPath.Count == 13)
-                                {
-
-                                }
                                 var firstKillInTurn = turn.First(x => x.Kill);
                                 var killIndex = turn.IndexOf(firstKillInTurn);
                                 var cellBeforeKill = killIndex == 0 ?  cell : turn[killIndex - 1];
@@ -91,7 +83,6 @@ namespace Checkers.Core
                     {
                         killFlag = true;
                     }
-
                 }
 
                 if (newPath.Any() && !newPath.Any(c => c.Kill))
@@ -105,7 +96,5 @@ namespace Checkers.Core
                 paths.Add(new Move(currentPath));
             }
         }
-
-
     }
 }
