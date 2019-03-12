@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Checkers.Core
@@ -46,7 +47,7 @@ namespace Checkers.Core
                 iterationCount++;
                 var quequeItem = queue.Dequeue();
 
-                if (iterationCount > 50000)
+                if (iterationCount > 30000)
                 {
                     games.Add(quequeItem.currentGame);
                     continue;
@@ -57,7 +58,13 @@ namespace Checkers.Core
                 var possibleStartCells = GetAvaliableCellMoves(quequeItem.currentField, aiCells).ToList();
                 if (iterationCount == 1 && possibleStartCells.Count == 1 && possibleStartCells.Single().Count == 1)
                 {
+                    Thread.Sleep(500);
                     return possibleStartCells.First().First();
+                }
+                if (!possibleStartCells.Any())
+                {
+                    games.Add(quequeItem.currentGame);
+                    continue;
                 }
 
                 Parallel.ForEach(possibleStartCells,
@@ -97,7 +104,7 @@ namespace Checkers.Core
             Move result = null;
             if (sorted.Any())
             {
-                result = sorted.Where(x => x.Any()).First().First();
+                result = sorted.Where(x => x.Any()).FirstOrDefault()?.FirstOrDefault();
             }
 
             return result;
@@ -141,8 +148,8 @@ namespace Checkers.Core
             }
 
             double total = (aiKills - humanKills) 
-                + (aiKings - humanKings) * 2
-                + (aiKillsKing - humanKillsKing) * 3;
+                + (aiKings - humanKings)
+                + (aiKillsKing - humanKillsKing);
 
             return total;
         }

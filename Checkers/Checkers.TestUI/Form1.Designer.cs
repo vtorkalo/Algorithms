@@ -36,7 +36,6 @@
             this.btnSetWhiteKing = new System.Windows.Forms.Button();
             this.btnSetEmpty = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
@@ -122,15 +121,6 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(1094, 131);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(100, 45);
-            this.button3.TabIndex = 8;
-            this.button3.Text = "Clear";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
             // button4
             // 
             this.button4.Location = new System.Drawing.Point(1094, 618);
@@ -169,7 +159,6 @@
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.btnSetEmpty);
             this.Controls.Add(this.btnSetWhiteKing);
@@ -194,7 +183,6 @@
         private System.Windows.Forms.Button btnSetWhiteKing;
         private System.Windows.Forms.Button btnSetEmpty;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;

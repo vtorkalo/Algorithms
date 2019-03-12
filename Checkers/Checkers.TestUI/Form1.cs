@@ -2,12 +2,9 @@
 using Checkers.Core.Tests;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Checkers
@@ -205,11 +202,11 @@ namespace Checkers
         private void button5_Click(object sender, EventArgs e)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("new List<List<Cell>>");
+            builder.Append("new List<Move>");
             builder.Append("{");
             foreach (var path in _movements)
             {
-                builder.Append("new List<Cell>{");
+                builder.Append("new Move{");
                 foreach (var cell in path)
                 {
                     builder.Append(string.Format("new Cell({0}, {1})", cell.Row, cell.Col));
@@ -242,9 +239,14 @@ namespace Checkers
                 }
             if (_selectedCell != null)
             {
-                builder.AppendLine(string.Format("selectedCell {0} {1}", _selectedCell.Row, _selectedCell.Col));
+                builder.AppendLine(string.Format("//selectedCell {0} {1}", _selectedCell.Row, _selectedCell.Col));
             }
             MessageBox.Show(builder.ToString());
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
