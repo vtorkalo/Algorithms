@@ -46,7 +46,7 @@ namespace Checkers.Core
                 iterationCount++;
                 var quequeItem = queue.Dequeue();
 
-                if (iterationCount > 200000)
+                if (iterationCount > 50000)
                 {
                     games.Add(quequeItem.currentGame);
                     continue;
@@ -121,7 +121,7 @@ namespace Checkers.Core
 
             double aiKings = 0;
             double humanKings = 0;
-            int count = game.Count % 2 == 0 ? game.Count : game.Count - 1;
+            int count = game.Count;
 
             for (int i = 0; i < count; i++)
             {
@@ -142,7 +142,7 @@ namespace Checkers.Core
 
             double total = (aiKills - humanKills) 
                 + (aiKings - humanKings) * 2
-                + (aiKillsKing - humanKillsKing * 2) * 2;
+                + (aiKillsKing - humanKillsKing) * 3;
 
             return total;
         }
