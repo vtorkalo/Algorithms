@@ -10,6 +10,7 @@ namespace Checkers.Core
         public int Col { get; private set; }
         public bool Kill { get; set; }
         public bool IsBack { get; private set; }
+        public bool KingKill { get; set;}
 
         public Cell(int row, int col, bool isBack = false, bool kill = false)
         {

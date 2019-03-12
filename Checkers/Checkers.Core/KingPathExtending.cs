@@ -44,7 +44,7 @@ namespace Checkers.Core
             }
         }
 
-        public List<Move> ExpandPaths(CellState[,] field, Cell startCell, List<Move> paths)
+        public List<Move> ExpandPaths(CellState[] field, Cell startCell, List<Move> paths)
         {
             var startCellState = Helpers.GetCellState(field, startCell);
             var expandedPaths = new List<Move>();
@@ -66,7 +66,7 @@ namespace Checkers.Core
             return expandedPaths;
         }
 
-        private List<Cell> GetLineAfterPathEnd(CellState[,] field, Cell startCell, CellState startCellState, List<Cell> path)
+        private List<Cell> GetLineAfterPathEnd(CellState[] field, Cell startCell, CellState startCellState, List<Cell> path)
         {
             var beforeLast = path.Skip(path.Count - 2).Take(1).Single();
             var lastCell = path.Last();

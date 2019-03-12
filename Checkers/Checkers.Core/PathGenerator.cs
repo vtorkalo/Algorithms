@@ -13,7 +13,7 @@ namespace Checkers.Core
 
         }
 
-        public List<Move> GetPossibleMovements(CellState[,] field, Cell startCell)
+        public List<Move> GetPossibleMovements(CellState[] field, Cell startCell)
         {
             var result = new List<Move>();
             var state = Helpers.GetCellState(field, startCell);

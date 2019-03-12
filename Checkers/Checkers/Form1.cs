@@ -53,7 +53,7 @@ namespace Checkers
             pnlField.Enabled = _gameStarted;
         }
 
-        private CellState[,] _field = Helpers.GetInitialField();
+        private CellState[] _field = Helpers.GetInitialField();
         private Cell _startCell = null;
         private List<Move> _movements = new List<Move>();
         private CellComparer _cellComparer = new CellComparer();
@@ -126,66 +126,66 @@ namespace Checkers
                     col * cellSize,
                     row * cellSize,
                     cellSize - lineWidth,
-                    cellSize - lineWidth);        
+                    cellSize - lineWidth);
             }
         }
 
         private void RenderField(PaintEventArgs e)
         {
-            for (int x = 0; x < 8; x++)
+            e.Graphics.FillRectangle(Brushes.White, 0, 0, cellSize * 8, cellSize * 8);
+            for (int i = 0; i < 32; i++)
             {
-                for (int y = 0; y < 8; y++)
+                int x, y;
+                Field.GetRowCol(i, out y, out x);
+                int row = GetRow(y);
+                int col = GetCol(x);
+
+                int color = (x + (y + 1 % 2)) % 2;
+                var brush = color == 0 ? Brushes.LightGray : Brushes.White;
+                e.Graphics.FillRectangle(brush, x * cellSize, y * cellSize, cellSize, cellSize);
+
+                CellState state = Field.GetValue(_field, row, col);
+                Brush checkerColor = Brushes.White;
+                switch (state)
                 {
-                    int row = GetRow(y);
-                    int col = GetCol(x);
-                    
-                    int color = (x + (y + 1 % 2)) % 2;
-                    var brush = color == 0 ? Brushes.LightGray : Brushes.White;
-                    e.Graphics.FillRectangle(brush, x * cellSize, y * cellSize, cellSize, cellSize);
+                    case CellState.White:
+                    case CellState.WhiteKing:
+                        checkerColor = Brushes.White;
+                        break;
 
-                    CellState state = _field[row, col];
-                    Brush checkerColor = Brushes.White;
-                    switch (state)
+                    case CellState.Black:
+                    case CellState.BlackKing:
+                        checkerColor = Brushes.DarkGray;
+                        break;
+
+                }
+
+                float checkerSize = (float)(cellSize * 0.7);
+                if (state != CellState.Empty)
+                {
+                    e.Graphics.FillEllipse(checkerColor,
+                        x * cellSize + (cellSize - checkerSize) / 2,
+                        y * cellSize + (cellSize - checkerSize) / 2,
+                        checkerSize,
+                        checkerSize);
+
+                    if (state == CellState.BlackKing || state == CellState.WhiteKing)
                     {
-                        case CellState.White:
-                        case CellState.WhiteKing:
-                            checkerColor = Brushes.White;
-                            break;
-
-                        case CellState.Black:
-                        case CellState.BlackKing:
-                            checkerColor = Brushes.DarkGray;
-                            break;
-
+                        e.Graphics.DrawString("K", new Font("arial", cellSize * 0.2f),
+                            Brushes.Black,
+                            x * cellSize + cellSize * 0.35f,
+                            y * cellSize + cellSize * 0.35f);
                     }
 
-                    float checkerSize = (float)(cellSize * 0.7);
-                    if (state != CellState.Empty)
-                    {
-                        e.Graphics.FillEllipse(checkerColor,
-                            x * cellSize + (cellSize - checkerSize) / 2,
-                            y * cellSize + (cellSize - checkerSize) / 2,
-                            checkerSize,
-                            checkerSize);
+                }
 
-                        if (state == CellState.BlackKing || state == CellState.WhiteKing)
-                        {
-                            e.Graphics.DrawString("K", new Font("arial", cellSize * 0.2f),
-                                Brushes.Black,
-                                x * cellSize + cellSize * 0.35f,
-                                y * cellSize + cellSize * 0.35f);
-                        }
-
-                    }
-
-                    if (row % 2 != col % 2)
-                    {
-                        e.Graphics.DrawString(string.Format("{0} {1}", col, row),
-                             new Font(FontFamily.GenericSerif, cellSize * 0.15f),
-                             Brushes.DarkGray,
-                             x * cellSize,
-                             y * cellSize + cellSize * 0.7f);
-                    }
+                if (row % 2 != col % 2)
+                {
+                    e.Graphics.DrawString(string.Format("{0} {1}", row, col),
+                         new Font(FontFamily.GenericSerif, cellSize * 0.15f),
+                         Brushes.DarkGray,
+                         x * cellSize,
+                         y * cellSize + cellSize * 0.7f);
                 }
             }
         }
@@ -209,7 +209,7 @@ namespace Checkers
 
             var cell = new Cell(GetRow(e.Y / cellSize), GetCol(e.X / cellSize));
 
-            if (cell.Row % 2 != cell.Col % 2) 
+            if (cell.Row % 2 != cell.Col % 2)
             {
 
                 if (_startCell == null && _avaliableCells.Contains(cell, _cellComparer))
@@ -235,7 +235,7 @@ namespace Checkers
                         SetStartCell(cell);
                     }
                 }
-                
+
 
                 pnlField.Refresh();
             }
@@ -264,6 +264,6 @@ namespace Checkers
             _movements = _pathGenerator.GetPossibleMovements(_field, _startCell);
         }
 
-     
+
     }
 }

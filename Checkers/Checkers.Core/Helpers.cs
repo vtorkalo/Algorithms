@@ -6,25 +6,25 @@ namespace Checkers.Core
 {
     public static class Helpers
     {
-        public static void SetCell(CellState[,] field, Cell cell, CellState cellState)
-        {
-            field[cell.Row, cell.Col] = cellState;
-        }
-
-        public static Move MakeMove(CellState[,] field, Move path)
+        public static Move MakeMove(CellState[] field, Move path)
         {
             var startCell = path.First();
             var endCell = path.Last();
             var kills = path.Where(x => x.Kill);
             foreach (var kill in kills)
             {
-                SetCell(field, kill, CellState.Empty);
+                Field.SetValue(field, kill, CellState.Empty);
                 path.Kills++;
+
+                if (kill.KingKill)
+                { 
+                    path.KingKills++;
+                }
             }
 
             var startCellState = GetCellState(field, startCell);
-            SetCell(field, startCell, CellState.Empty);
-            SetCell(field, endCell, startCellState);
+            Field.SetValue(field, startCell, CellState.Empty);
+            Field.SetValue(field, endCell, startCellState);
 
             var whiteCells = Helpers.GetCellsOfSide(field, Side.White);
             foreach (var cell in whiteCells)
@@ -32,7 +32,7 @@ namespace Checkers.Core
                 var state = GetCellState(field, cell);
                 if (state == CellState.White && cell.Row == 0)
                 {
-                    SetCell(field, cell, CellState.WhiteKing);
+                    Field.SetValue(field, cell, CellState.WhiteKing);
                     path.NewKings++;
                 }
             }
@@ -43,7 +43,7 @@ namespace Checkers.Core
                 var state = GetCellState(field, cell);
                 if (state == CellState.Black && cell.Row == 7)
                 {
-                    SetCell(field, cell, CellState.BlackKing);
+                    Field.SetValue(field, cell, CellState.BlackKing);
                     path.NewKings++;
                 }
             }
@@ -51,11 +51,10 @@ namespace Checkers.Core
             return path;
         }
 
-        public static CellState[,] CopyField(CellState[,] field)
+        public static CellState[] CopyField(CellState[] field)
         {
-            var result = new CellState[8, 8];
-            Array.Copy(field, result, 64);
-
+            var result = new CellState[32];
+            Array.Copy(field, result, 32);
             return result;
         }
 
@@ -64,22 +63,20 @@ namespace Checkers.Core
             return side == Side.White ? Side.Black : Side.White;
         }
 
-        public static List<Cell> GetCellsOfSide(CellState[,] field, Side side)
+        public static List<Cell> GetCellsOfSide(CellState[] field, Side side)
         {
-            int rows = field.GetLength(0);
-            int cols = field.GetLength(0);
             var result = new List<Cell>();
 
-            for (int row = 0; row < rows; row++)
-                for (int col = 0; col < cols; col++)
+            for (int index = 0; index < 32; index++)
+            {
+                Field.GetRowCol(index, out int row, out int col);
+                CellState state = Field.GetValue(field, row, col);
+                if ((side == Side.White && Helpers.IsWhite(state))
+                    || (side == Side.Black && Helpers.IsBlack(state)))
                 {
-                    CellState state = field[row, col];
-                    if ((side == Side.White && Helpers.IsWhite(state))
-                        ||(side == Side.Black && Helpers.IsBlack(state)))
-                    {
-                        result.Add(new Cell(row, col));
-                    }
+                    result.Add(new Cell(row, col));
                 }
+            }
 
             return result;
         }
@@ -219,13 +216,13 @@ namespace Checkers.Core
             return equal;
         }
 
-        public static CellState GetCellState(CellState[,] field, Cell currentCell)
+        public static CellState GetCellState(CellState[] field, Cell currentCell)
         {
-            var state = field[currentCell.Row, currentCell.Col];
+            var state = Field.GetValue(field, currentCell);
             return state;
         }
 
-        public static bool CanKill(CellState[,] field, Cell currentCell, Cell enemyCell, Cell startCell)
+        public static bool CanKill(CellState[] field, Cell currentCell, Cell enemyCell, Cell startCell)
         {
             Cell targetCell = GetCellAfterKill(currentCell, enemyCell);
             bool canKill = Helpers.IsInRange(targetCell)
@@ -269,40 +266,36 @@ namespace Checkers.Core
             return cellAfterKill;
         }
 
-        public static bool IsFree(CellState[,] field, Cell startCell, Cell targetCell)
+        public static bool IsFree(CellState[] field, Cell startCell, Cell targetCell)
         {
             return Helpers.GetCellState(field, targetCell) == CellState.Empty || Helpers.CompareCells(targetCell, startCell);
         }
 
-        public static CellState[,] GetEmptyField()
+        public static CellState[] GetEmptyField()
         {
-            var result = new CellState[,]
+            var result = new CellState[]
             {
-                { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
-                { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
-                { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
-                { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
-                { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
-                { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
-                { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
-                { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
+                 CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,
+                 CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,
+                 CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,
+                 CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,
             };
 
             return result;
         }
 
-        public static CellState[,] GetInitialField()
+        public static CellState[] GetInitialField()
         {
-            var result = new CellState[8, 8]
+            var result = new CellState[32]
             {
-                { CellState.Empty, CellState.Black,CellState.Empty,CellState.Black,CellState.Empty,CellState.Black,CellState.Empty,CellState.Black},
-                { CellState.Black, CellState.Empty,CellState.Black,CellState.Empty,CellState.Black,CellState.Empty,CellState.Black,CellState.Empty},
-                { CellState.Empty, CellState.Black,CellState.Empty,CellState.Black,CellState.Empty,CellState.Black,CellState.Empty,CellState.Black},
-                { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
-                { CellState.Empty, CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty,CellState.Empty},
-                { CellState.White, CellState.Empty,CellState.White,CellState.Empty,CellState.White,CellState.Empty,CellState.White,CellState.Empty},
-                { CellState.Empty, CellState.White,CellState.Empty,CellState.White,CellState.Empty,CellState.White,CellState.Empty,CellState.White},
-                { CellState.White, CellState.Empty,CellState.White,CellState.Empty,CellState.White,CellState.Empty,CellState.White,CellState.Empty}
+                 CellState.Black, CellState.Black, CellState.Black, CellState.Black,
+                 CellState.Black, CellState.Black, CellState.Black, CellState.Black,
+                 CellState.Black, CellState.Black, CellState.Black, CellState.Black,
+                 CellState.Empty, CellState.Empty, CellState.Empty, CellState.Empty,
+                 CellState.Empty, CellState.Empty, CellState.Empty, CellState.Empty,
+                 CellState.White, CellState.White, CellState.White, CellState.White,
+                 CellState.White, CellState.White, CellState.White, CellState.White,
+                 CellState.White, CellState.White, CellState.White, CellState.White,
             };
 
             return result;

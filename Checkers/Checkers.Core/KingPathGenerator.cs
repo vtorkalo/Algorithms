@@ -16,7 +16,7 @@ namespace Checkers.Core
         private PathComparer _pathComparer = new PathComparer();
         List<Cell> bugPath = new List<Cell> { new Cell(7, 0), new Cell(6, 1), new Cell(5, 2), new Cell(4, 3), new Cell(3, 4), new Cell(4, 5), new Cell(5, 6), new Cell(6, 5), new Cell(7, 4), new Cell(6, 3), new Cell(5, 2), new Cell(4, 1), new Cell(3, 0), new Cell(2, 1), new Cell(1, 2), new Cell(0, 3), new Cell(1, 4), new Cell(2, 5), new Cell(3, 6) };
 
-        public List<Move> GetPossibleMovements(CellState[,] field, Cell startCell)
+        public List<Move> GetPossibleMovements(CellState[] field, Cell startCell)
         {
             var paths = new List<Move>();
             var currentPath = new List<Cell>();
@@ -32,7 +32,7 @@ namespace Checkers.Core
             return paths.OrderByDescending(p => p.Count(x => x.Kill)).ToList();
         }
 
-        private void GetPossibleKingMovementsRecursive(List<Move> paths, List<Cell> currentPath, CellState[,] field, Cell startCell, Cell currentCell)
+        private void GetPossibleKingMovementsRecursive(List<Move> paths, List<Cell> currentPath, CellState[] field, Cell startCell, Cell currentCell)
         {
             var startCellState = Helpers.GetCellState(field, startCell);
             var lines = _kingNeightborsGenerator.GetKingNeightbors(field, startCell, startCellState, currentCell).ToList();

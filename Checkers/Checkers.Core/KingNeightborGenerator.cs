@@ -6,7 +6,7 @@ namespace Checkers.Core
 {
     public class KingNeightborGenerator
     {
-        public List<List<Cell>> GetKingNeightbors(CellState[,] field, Cell startCell, CellState startCellState, Cell currentCell)
+        public List<List<Cell>> GetKingNeightbors(CellState[] field, Cell startCell, CellState startCellState, Cell currentCell)
         {
             var result = new List<List<Cell>>();
             result.Add(GetKingNeightbors(field, startCell, startCellState, currentCell, Helpers.GetRightTopNextCell));
@@ -17,7 +17,7 @@ namespace Checkers.Core
             return result;
         }
 
-        public List<Cell> GetKingNeightbors(CellState[,] field, Cell startCell, CellState startCellState, Cell currentCell,
+        public List<Cell> GetKingNeightbors(CellState[] field, Cell startCell, CellState startCellState, Cell currentCell,
             Func<Cell, int, Cell> getter)
         {
             var result = new List<Cell>();
@@ -45,6 +45,8 @@ namespace Checkers.Core
                             break;
                         }
                         newCell.Kill = true;
+                        newCell.KingKill = newCellState == CellState.BlackKing 
+                            || newCellState == CellState.WhiteKing;
                     }
                     else
                     {

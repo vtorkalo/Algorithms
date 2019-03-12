@@ -8,7 +8,7 @@ namespace Checkers.Core
     public class StandartPathGenerator : IPathGenerator
     {
 
-        public List<Move> GetPossibleMovements(CellState[,] field, Cell currentCell)
+        public List<Move> GetPossibleMovements(CellState[] field, Cell currentCell)
         {
             var paths = new List<Move>();
             var currentPath = new Move();
@@ -24,7 +24,7 @@ namespace Checkers.Core
             return paths;
         }
         
-        private void GetPossibleMovementsRecursive(List<Move> paths, Move currentPath, CellState[,] field, Cell startCell, Cell currentCell)
+        private void GetPossibleMovementsRecursive(List<Move> paths, Move currentPath, CellState[] field, Cell startCell, Cell currentCell)
         {
             var startCellState = Helpers.GetCellState(field, startCell);
             var neightbors = Helpers.GetNeightbors(currentCell, startCellState);
@@ -59,8 +59,10 @@ namespace Checkers.Core
                     (
                         nextCell.Row,
                         nextCell.Col,
-                        kill: true
+                        kill: true                        
                     );
+                    killCell.KingKill = nextCellState == CellState.BlackKing 
+                            || nextCellState == CellState.WhiteKing;
 
                     var newPath = new Move();
                     newPath.AddRange(currentPath);

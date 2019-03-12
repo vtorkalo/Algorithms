@@ -8,6 +8,7 @@ namespace Checkers.Core
     {
         public int Kills { get; set; }
         public int NewKings { get; set; }
+        public int KingKills { get; set; }
         public Move()
         {
 

@@ -6,7 +6,7 @@ namespace Checkers.Core.Tests
 {
     public static class TestFieldData
     {
-        public static CellState[,] King_Moves_Case1()
+        public static CellState[] King_Moves_Case1()
         {
             var result = Helpers.GetEmptyField();
 
@@ -20,7 +20,7 @@ namespace Checkers.Core.Tests
             return result;
         }
 
-        public static CellState[,] King_Moves_Case2()
+        public static CellState[] King_Moves_Case2()
         {
             var result = Helpers.GetEmptyField();
 
@@ -34,7 +34,7 @@ namespace Checkers.Core.Tests
             return result;
         }
 
-        public static CellState[,] King_Moves_Case3()
+        public static CellState[] King_Moves_Case3()
         {
             var result = Helpers.GetEmptyField();
 
@@ -47,7 +47,7 @@ namespace Checkers.Core.Tests
             return result;
         }
 
-        public static CellState[,] King_Moves_Case4()
+        public static CellState[] King_Moves_Case4()
         {
             var result = Helpers.GetEmptyField();
             
@@ -61,7 +61,7 @@ namespace Checkers.Core.Tests
         }
 
 
-        public static CellState[,] King_Moves_Case5()
+        public static CellState[] King_Moves_Case5()
         {
             var result = Helpers.GetEmptyField();
             result[4, 3] = CellState.WhiteKing;
@@ -71,7 +71,7 @@ namespace Checkers.Core.Tests
             return result;
         }
 
-        public static CellState[,] King_Moves_Case6()
+        public static CellState[] King_Moves_Case6()
         {
             var result = Helpers.GetEmptyField();
             result[1, 6] = CellState.Black;
@@ -88,7 +88,7 @@ namespace Checkers.Core.Tests
         }
 
 
-        public static CellState[,] Standart_Moves_Case1()
+        public static CellState[] Standart_Moves_Case1()
         {
             var result = Helpers.GetEmptyField();
             result[0, 7] = CellState.Black;
@@ -108,7 +108,7 @@ namespace Checkers.Core.Tests
         }
 
 
-        public static CellState[,] Standart_Moves_Case2()
+        public static CellState[] Standart_Moves_Case2()
         {
             var result = Helpers.GetEmptyField();
             result[7, 2] = CellState.Black;
@@ -117,7 +117,7 @@ namespace Checkers.Core.Tests
             return result;
         }
 
-        public static CellState[,] Standart_Moves_Case3()
+        public static CellState[] Standart_Moves_Case3()
         {
             var result = Helpers.GetEmptyField();
             result[5, 4] = CellState.White;
@@ -127,7 +127,7 @@ namespace Checkers.Core.Tests
             return result;
         }
 
-        public static CellState[,] Standart_Moves_Case4()
+        public static CellState[] Standart_Moves_Case4()
         {
             var result = Helpers.GetEmptyField();
             result[3, 4] = CellState.White;
@@ -137,7 +137,7 @@ namespace Checkers.Core.Tests
             return result;
         }
 
-        public static CellState[,] Standart_Moves_Case()
+        public static CellState[] Standart_Moves_Case()
         {
             var result = Helpers.GetEmptyField();
           
@@ -146,7 +146,7 @@ namespace Checkers.Core.Tests
             return result;
         }
 
-        public static CellState[,] Standart_Moves_Case5()
+        public static CellState[] Standart_Moves_Case5()
         {
             var result = Helpers.GetEmptyField();
 
@@ -167,7 +167,7 @@ namespace Checkers.Core.Tests
         }
 
 
-        public static CellState[,] King_Moves_Case7()
+        public static CellState[] King_Moves_Case7()
         {
             var result = Helpers.GetEmptyField();
 
@@ -187,7 +187,7 @@ namespace Checkers.Core.Tests
             return result;
         }
 
-        public static CellState[,] Standart_Moves_Case6()
+        public static CellState[] Standart_Moves_Case6()
         {
             var result = Helpers.GetEmptyField();
             result[0, 1] = CellState.Black;
@@ -220,7 +220,7 @@ namespace Checkers.Core.Tests
         }
 
 
-        public static CellState[,] King_Moves_Case8()
+        public static CellState[] King_Moves_Case8()
         {
             var result = Helpers.GetEmptyField();
             result[2, 1] = CellState.White;
