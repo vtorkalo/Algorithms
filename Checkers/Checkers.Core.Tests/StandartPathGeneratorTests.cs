@@ -68,6 +68,17 @@ namespace Checkers.Core.Tests
             AreEquivalent(actual, expected);
         }
 
+        [TestMethod]
+        public void GetPossibleMovements_Case6()
+        {
+            var field = TestFieldData.Standart_Moves_CaseStandardToKingDuringMove();
+            var actual = _target.GetPossibleMovements(field, new Cell(3, 4));
+            var expected = new List<Move> { new Move { new Cell(3, 4), new Cell(4, 3), new Cell(5, 2), new Cell(6, 3), new Cell(7, 4), new Cell(6, 5), new Cell(5, 6), new Cell(4, 7), new Cell(3, 6), new Cell(2, 5), new Cell(1, 4), new Cell(0, 3) } };
+
+            AreEquivalent(actual, expected);
+        }
+
+
         private void AreEquivalent(List<Move> actual, List<Move> expected)
         {
             Assert.IsTrue(actual.Intersect(expected, _pathComparer).SequenceEqual(actual, _pathComparer));

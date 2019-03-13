@@ -12,16 +12,13 @@ namespace Checkers.Core
         public List<Move> GetPossibleMovements(CellState[] field, Cell currentCell)
         {
             var paths = new List<Move>();
-            var currentPath = new Move();
+            var currentPath = new Move { currentCell};
             GetPossibleMovementsRecursive(paths, currentPath, field, currentCell, currentCell);
             if (paths.Any(p => p.Any(x => x.Kill))) //Any kill possible - remove paths without kill
             {
                 paths = paths.Where(p => p.Any(x => x.Kill)).ToList();
             }
-            foreach (var path in paths) // TODO: adding start cell to beginning of each path. TODO refactor
-            {
-                path.Insert(0, currentCell);
-            }
+ 
             return paths;
         }
         
@@ -37,9 +34,9 @@ namespace Checkers.Core
                 var emptyCells = new List<Cell>();
                 if (Helpers.IsFree(field, startCell, neightbor)
                    && !neightbor.IsBack
-                   && !currentPath.Any()) //first movement in path to empty cell
+                   && currentPath.Count == 1) //first movement in path to empty cell
                 {
-                    paths.Add(new Move { neightbor });
+                    paths.Add(new Move { startCell, neightbor });
                 }
                 else
                 {
@@ -77,20 +74,7 @@ namespace Checkers.Core
                         || afterKillCell.Row == 7 && startCellState == CellState.Black)
                     {
                         var fieldCopy = Helpers.CopyField(field);
-                        if (Helpers.IsWhite(startCellState))
-                        {
-                            Field.SetValue(fieldCopy, afterKillCell, CellState.WhiteKing);
-                        }
-
-                        if (Helpers.IsBlack(startCellState))
-                        {
-                            Field.SetValue(fieldCopy, afterKillCell, CellState.BlackKing);
-                        }
-
-                        foreach (var c in newPath.Where(x => x.Kill))
-                        {
-                            Field.SetValue(fieldCopy, c, CellState.Empty);
-                        }
+                        Helpers.MakeMove(fieldCopy, newPath);
 
                         var moves = _kingPathGenerator.GetPossibleMovements(fieldCopy, afterKillCell);
                         var kingMovesWithKills = moves.Where(m => m.Any(x => x.Kill));
@@ -108,7 +92,7 @@ namespace Checkers.Core
                     }
                 }
             }
-            if (!anyKill && currentPath.Any())
+            if (!anyKill && currentPath.Count > 1)
             {
                 paths.Add(currentPath);
             }

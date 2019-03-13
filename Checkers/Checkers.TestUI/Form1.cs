@@ -21,7 +21,7 @@ namespace Checkers
 
         private void button1_Click(object sender, EventArgs e)
         {
-            _field = TestFieldData.Standart_Moves_Case1();
+            _field = TestFieldData.Standart_Moves_Case3();
             _selectedCell = new Cell(3, 4);
             pnlField.Refresh();
         }
