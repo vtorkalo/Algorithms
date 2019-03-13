@@ -27,15 +27,15 @@ namespace Checkers.Core
         
         private void GetPossibleMovementsRecursive(List<Move> paths, Move currentPath, CellState[] field, Cell startCell, Cell currentCell)
         {
-            var fieldCopy = Helpers.CopyField(field);
-            var startCellState = Helpers.GetCellState(fieldCopy, startCell);
+            
+            var startCellState = Helpers.GetCellState(field, startCell);
             var neightbors = Helpers.GetNeightbors(currentCell, startCellState);
             var possibleEnemies = new List<Cell>();
 
             foreach (var neightbor in neightbors)
             {
                 var emptyCells = new List<Cell>();
-                if (Helpers.IsFree(fieldCopy, startCell, neightbor)
+                if (Helpers.IsFree(field, startCell, neightbor)
                    && !neightbor.IsBack
                    && !currentPath.Any()) //first movement in path to empty cell
                 {
@@ -53,9 +53,9 @@ namespace Checkers.Core
             bool anyKill = false;
             foreach (var nextCell in possibleEnemies)
             {
-                var nextCellState = Helpers.GetCellState(fieldCopy, nextCell);
+                var nextCellState = Helpers.GetCellState(field, nextCell);
                 if (Helpers.IsEnemy(startCellState, nextCellState)
-                     && Helpers.CanKill(fieldCopy, currentCell, nextCell, startCell))
+                     && Helpers.CanKill(field, currentCell, nextCell, startCell))
                 {
                     var killCell = new Cell
                     (
@@ -76,8 +76,7 @@ namespace Checkers.Core
                     if (afterKillCell.Row == 0 && startCellState == CellState.White
                         || afterKillCell.Row == 7 && startCellState == CellState.Black)
                     {
-                        
-
+                        var fieldCopy = Helpers.CopyField(field);
                         if (Helpers.IsWhite(startCellState))
                         {
                             Field.SetValue(fieldCopy, afterKillCell, CellState.WhiteKing);
@@ -88,20 +87,25 @@ namespace Checkers.Core
                             Field.SetValue(fieldCopy, afterKillCell, CellState.BlackKing);
                         }
 
-                        foreach (var c in currentPath.Where(x=>x.Kill))
+                        foreach (var c in newPath.Where(x => x.Kill))
                         {
                             Field.SetValue(fieldCopy, c, CellState.Empty);
                         }
 
                         var moves = _kingPathGenerator.GetPossibleMovements(fieldCopy, afterKillCell);
+                        var kingMovesWithKills = moves.Where(m => m.Any(x => x.Kill));
 
-                        if (moves.Any(m=>m.Any(x=>x.Kill)))
+                        foreach (var move in kingMovesWithKills.Select(m=>m.Skip(1)))
                         {
-                            newPath.AddRange(moves.First());
+                            var p = new Move(newPath);
+                            p.AddRange(move);
+                            paths.Add(p);
                         }
                     }
-
-                    GetPossibleMovementsRecursive(paths, newPath, fieldCopy, startCell, afterKillCell);
+                    else
+                    {
+                        GetPossibleMovementsRecursive(paths, newPath, field, startCell, afterKillCell);
+                    }
                 }
             }
             if (!anyKill && currentPath.Any())
